@@ -59,7 +59,6 @@ app.get('/api/employee-exists/:maNV/:cccd', (req, res) => {
       }
     });
   });
-  
 // Thêm nhân viên mới
 app.post('/api/add-employee', (req, res) => {
     const { MaNV, HoTenNV } = req.body;
@@ -76,6 +75,70 @@ app.post('/api/add-employee', (req, res) => {
       } else {
         res.json({ message: "Thêm nhân viên thành công." });
       }
+    });
+  });
+// Xóa nhân viên theo MaNV
+app.delete('/api/employees/:maNV', (req, res) => {
+    const maNV = req.params.maNV;
+    const query = 'DELETE FROM NhanVien WHERE MaNV = ?';
+    
+    db.query(query, [maNV], (err, results) => {
+      if (err) {
+        console.error("Lỗi khi xóa nhân viên:", err);
+        return res.status(500).json({ error: "Lỗi máy chủ" });
+      }
+      if (results.affectedRows > 0) {
+        res.status(200).json({ message: 'Nhân viên đã được xóa thành công' });
+      } else {
+        res.status(404).json({ error: 'Nhân viên không tồn tại' });
+      }
+    });
+  });
+// Cập nhật thông tin nhân viên theo MaNV
+app.put('/api/employees/:maNV', (req, res) => {
+    const maNV = req.params.maNV; // Lấy MaNV từ URL params
+    const { HoTenNV, GioiTinh, NgaySinh, NoiSinh, TrangThai } = req.body; // Lấy các thông tin cần cập nhật từ body
+  
+    // Kiểm tra xem tất cả các dữ liệu có hợp lệ không
+    if (!HoTenNV || !GioiTinh || !NgaySinh || !NoiSinh || !TrangThai) {
+      return res.status(400).json({ error: 'Tất cả các trường phải được điền đầy đủ' });
+    }
+  
+    // Truy vấn SQL để cập nhật thông tin nhân viên
+    const query = `
+      UPDATE NhanVien
+      SET HoTenNV = ?, GioiTinh = ?, NgaySinh = ?, NoiSinh = ?, TrangThai = ?
+      WHERE MaNV = ?
+    `;
+  
+    db.query(query, [HoTenNV, GioiTinh, NgaySinh, NoiSinh, TrangThai, maNV], (err, results) => {
+      if (err) {
+        console.error('Lỗi khi cập nhật thông tin nhân viên:', err);
+        return res.status(500).json({ error: 'Lỗi máy chủ' });
+      }
+  
+      // Kiểm tra nếu có bản ghi nào bị ảnh hưởng
+      if (results.affectedRows > 0) {
+        return res.status(200).json({ message: 'Thông tin nhân viên đã được cập nhật' });
+      } else {
+        return res.status(404).json({ error: 'Không tìm thấy nhân viên với MaNV này' });
+      }
+    });
+  });
+// Kiểm tra tính duy nhất của email và CCCD
+app.get('/api/employees/check-duplicate', (req, res) => {
+    const { email, cccd } = req.query;
+  
+    const query = `SELECT * FROM NhanVien WHERE Email = ? OR CCCD = ?`;
+    db.query(query, [email, cccd], (err, results) => {
+      if (err) {
+        console.error('Lỗi khi kiểm tra trùng email hoặc CCCD:', err);
+        return res.status(500).json({ error: 'Lỗi máy chủ' });
+      }
+      if (results.length > 0) {
+        return res.status(409).json({ error: 'Email hoặc CCCD đã tồn tại.' });
+      }
+      return res.status(200).json({ message: 'Không có sự trùng lặp.' });
     });
   });
   

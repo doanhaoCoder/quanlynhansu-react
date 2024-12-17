@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Dashboard from './components/Dashboard';
 import EmployeeList from './components/EmployeeList';
 import AddEmployee from './components/AddEmployee';
+import EditEmployee from './components/EditEmployee';
+
 
 
 
@@ -15,8 +17,9 @@ const App = () => {
         <Route path="/" element={<Navigate to="/dashboard" />} />
 
         <Route path="/dashboard" element={<Dashboard />}> 
-          <Route path="danh-sach-nhan-vien" element={<EmployeeList />} />
-          <Route path="them-nhan-vien" element={<AddEmployee />} />
+          <Route path="list-nhan-vien" element={<EmployeeList />} />
+          <Route path="add-nhan-vien" element={<AddEmployee />} />
+          <Route path="edit-nhan-vien/:maNV" element={<EditEmployee />} />
 
 
         
