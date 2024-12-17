@@ -1,13 +1,18 @@
 // import logo from './logo.svg';
 // import './App.css';
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Dashboard from './components/Dashboard';
-import EmployeeList from './components/EmployeeList';
-import AddEmployee from './components/AddEmployee';
-import EditEmployee from './components/EditEmployee';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import Dashboard from "./components/Dashboard";
+import EmployeeList from "./components/employee/EmployeeList";
+import AddEmployee from "./components/employee/AddEmployee";
+import EmployeeDetail from "./components/employee/EmployeeDetail";
+import EditEmployee from "./components/employee/EditEmployee";
 
-
-
+// EmployeeDetail.js
 
 const App = () => {
   return (
@@ -16,21 +21,14 @@ const App = () => {
         {/* Định tuyến gốc */}
         <Route path="/" element={<Navigate to="/dashboard" />} />
 
-        <Route path="/dashboard" element={<Dashboard />}> 
-          <Route path="list-nhan-vien" element={<EmployeeList />} />
-          <Route path="add-nhan-vien" element={<AddEmployee />} />
-          <Route path="edit-nhan-vien/:maNV" element={<EditEmployee />} />
-
-
-        
-          {/* <Route path="them-nhan-vien" element={<AddEmployee />} />
-          <Route path="sua-nhan-vien/:id" element={<EditEmployee />} />
-          <Route path="danh-sach-nhan-vien" element={<EmployeeList />} /> */}
+        <Route path="/dashboard" element={<Dashboard />}>
+          <Route path="danh-sach-nhan-vien" element={<EmployeeList />} />
+          <Route path="them-nhan-vien" element={<AddEmployee />} />
+          <Route path="chi-tiet-nhan-vien/:id" element={<EmployeeDetail />} />
+          <Route path="chinh-sua-nhan-vien/:id" element={<EditEmployee />} />
         </Route>
-        
       </Routes>
     </Router>
-
   );
 };
 
