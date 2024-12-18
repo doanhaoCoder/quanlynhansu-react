@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
-import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
+import {FaEye, FaEdit, FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 
 const BangLuong = () => {
   const navigate = useNavigate(); // Khai báo hook navigate
@@ -151,7 +151,7 @@ const BangLuong = () => {
   );
 
   return (
-    <div className="container mt-4">
+    <div className=" mt-4">
       <h2>Bảng Lương</h2>
 
       {/* Tìm kiếm và lọc */}
@@ -207,13 +207,13 @@ const BangLuong = () => {
                     navigate(`/dashboard/chi-tiet-bang-luong/${item.id}`)
                   }
                 >
-                  Xem Chi Tiết
+                  <FaEye />
                 </button>
                 <button
                   className="btn btn-danger"
                   onClick={() => handleDelete(item.id)}
                 >
-                  Xóa
+                  <FaEdit />
                 </button>
               </td>
             </tr>
