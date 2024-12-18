@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react"; // Thêm import useState và
 import { Outlet, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // Component React
 import { faUsers } from "@fortawesome/free-solid-svg-icons"; // Biểu tượng cần dùng
+import { faUser } from "@fortawesome/free-solid-svg-icons"; // Đảm bảo đã import faUser
+
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -170,15 +172,15 @@ const Dashboard = () => {
               </li>
               <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#forms">
-                  <i class="fas fa-pen-square"></i>
-                  <p>Forms</p>
+                  <FontAwesomeIcon icon={faUser} /> 
+                  <p> Người dùng</p>
                   <span class="caret"></span>
                 </a>
                 <div class="collapse" id="forms">
                   <ul class="nav nav-collapse">
                     <li>
-                      <a href="forms/forms.html">
-                        <span class="sub-item">Basic Form</span>
+                      <a href="/dashboard/danh-sach-nguoi-dung">
+                        <span class="sub-item">Người dùng</span>
                       </a>
                     </li>
                   </ul>

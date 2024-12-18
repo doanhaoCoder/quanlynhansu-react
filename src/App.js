@@ -24,6 +24,11 @@ import EditDepartment from "./components/department/EditDepartment";
 import DutyList from "./components/duty/DutyList";
 import EditDuty from "./components/duty/EditDuty";
 
+import UserList from "./components/user/UserList";
+import EditUser from "./components/user/EditUser";
+
+
+
 const App = () => {
   return (
     <Router>
@@ -49,6 +54,9 @@ const App = () => {
           <Route path="chinh-sua-phong-ban/:id" element={<EditDepartment />} />
           <Route path="danh-sach-chuc-vu" element={<DutyList />} />
           <Route path="chinh-sua-chuc-vu/:id" element={<EditDuty />} />
+          <Route path="danh-sach-nguoi-dung" element={<UserList />} />
+          <Route path="chinh-sua-nguoi-dung" element={<EditUser />} />
+          
         </Route>
       </Routes>
     </Router>
