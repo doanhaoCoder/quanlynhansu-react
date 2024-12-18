@@ -11,6 +11,8 @@ const UserList = () => {
   const [filteredUsers, setFilteredUsers] = useState([]); // Danh sách người dùng đã lọc
   const [searchTerm, setSearchTerm] = useState(""); // Từ khóa tìm kiếm
   const [formData, setFormData] = useState({
+    ho: "",
+    ten: "",
     username: "",
     email: "",
     password: "",
@@ -70,15 +72,17 @@ const UserList = () => {
 
   const handleAddUser = async (e) => {
     e.preventDefault();
-    const { username, email, password, sdt, role, trangThai } = formData;
+    const { username, email, password, sdt, role, trangThai, ho, ten } = formData;
 
-    if (!username || !email || !sdt || !password) {
+    if (!username || !email || !sdt || !password || !ho || !ten) {
       toast.error("Vui lòng điền đầy đủ thông tin.");
       return;
     }
 
     try {
       await addDoc(collection(db, "users"), {
+        ho,
+        ten,
         username,
         email,
         password,
@@ -86,12 +90,12 @@ const UserList = () => {
         role,
         trangThai,
       });
-      setFormData({ username: "", email: "", password: "", role: "Nhân viên", sdt: "", trangThai: "Đang hoạt động" });
+      setFormData({ho: "", ten: "", username: "", email: "", password: "", role: "Nhân viên", sdt: "", trangThai: "Đang hoạt động" });
       toast.success("Thêm tài khoản thành công!");
       // Cập nhật danh sách người dùng
       setUsers((prev) => [
         ...prev,
-        { username, email, password, sdt, role, trangThai },
+        { ho, ten, username, email, password, sdt, role, trangThai },
       ]);
     } catch (error) {
       console.error("Error adding user: ", error);
@@ -133,6 +137,28 @@ const UserList = () => {
       {/* Form thêm tài khoản */}
       <form onSubmit={handleAddUser} className="mt-4">
         <div className="row g-3">
+        <div className="col-md-3">
+            <input
+              type="text"
+              className="form-control"
+              name="ho"
+              placeholder="Họ"
+              value={formData.ho}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="col-md-3">
+            <input
+              type="text"
+              className="form-control"
+              name="ten"
+              placeholder="Tên"
+              value={formData.ten}
+              onChange={handleChange}
+              required
+            />
+          </div>
           <div className="col-md-3">
             <input
               type="text"

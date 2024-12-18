@@ -8,12 +8,14 @@ const EditUser = () => {
   const { id } = useParams(); // Lấy ID từ URL
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    ho: "",
+    ten: "",
     username: "",
     email: "",
     password: "",
     sdt: "",
     role: "Nhân viên",
-    trangThai: "Đang hoạt động",
+    trangThai: "Chờ phê duyệt",
   });
   const [loading, setLoading] = useState(true);
 
@@ -51,9 +53,10 @@ const EditUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { username, email, sdt, role, trangThai } = formData;
+    const { username, email, sdt, role, trangThai, password, ho, ten } =
+      formData;
 
-    if (!username || !email || !sdt) {
+    if (!username || !email || !sdt || !password || !ho || !ten) {
       toast.error("Vui lòng điền đầy đủ thông tin.");
       return;
     }
@@ -61,7 +64,10 @@ const EditUser = () => {
     try {
       const userRef = doc(db, "users", id);
       await updateDoc(userRef, {
+        ho,
+        ten,
         username,
+        password,
         email,
         sdt,
         role,
@@ -83,6 +89,28 @@ const EditUser = () => {
       ) : (
         <form onSubmit={handleSubmit} className="mt-4">
           <div className="row g-3">
+            <div className="col-md-6">
+              <label className="form-label">Họ</label>
+              <input
+                type="text"
+                className="form-control"
+                name="ho"
+                value={formData.ho}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label">Tên</label>
+              <input
+                type="text"
+                className="form-control"
+                name="ten"
+                value={formData.ten}
+                onChange={handleChange}
+                required
+              />
+            </div>
             <div className="col-md-6">
               <label className="form-label">Tên Đăng Nhập</label>
               <input
@@ -136,10 +164,24 @@ const EditUser = () => {
                 value={formData.trangThai}
                 onChange={handleChange}
               >
+                <option value={formData.trangThai}>{formData.trangThai}</option>
+                {/* <option value="Chờ phê duyệt">Chờ phê duyệt</option> */}
                 <option value="Đang hoạt động">Đang hoạt động</option>
                 <option value="Ngừng hoạt động">Ngừng hoạt động</option>
               </select>
             </div>
+            <div className="col-md-6">
+              <label className="form-label">Password (mật khẩu)</label>
+              <input
+                type="text"
+                className="form-control"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
             <div className="col-md-12">
               <button type="submit" className="btn btn-primary">
                 Lưu Thay Đổi

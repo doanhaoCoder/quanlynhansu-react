@@ -168,8 +168,8 @@ const BangLuong = () => {
       </div>
 
       {/* Bảng dữ liệu */}
-      <table className="table table-striped">
-        <thead>
+      <table className="table table-bordered table-striped mt-3">
+        <thead className="table-dark">
           <tr>
             <th onClick={() => handleSort("stt")}>STT</th>
             <th onClick={() => handleSort("MaLuong")}>Mã Lương</th>

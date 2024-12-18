@@ -27,7 +27,7 @@ const EditEmployee = () => {
     TinhTrangHonNhan: "",
     MaThueTNCN: "",
     MaBH: "",
-    TinhTrang: "",
+    TinhTrang: "Đang làm việc",
     GhiChu: "",
     PhongBan: "",
     ChucVu: "",
