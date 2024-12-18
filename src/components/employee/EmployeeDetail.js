@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 
 const EmployeeDetail = () => {
+  const navigate = useNavigate(); // Khai báo hook navigate
+
   const { id } = useParams(); // Lấy ID nhân viên từ URL
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -71,6 +73,14 @@ const EmployeeDetail = () => {
   return (
     <div className="container mt-5">
       <h2 className="mb-4" style={{ fontSize: "2rem", fontWeight: "bold" }}>
+        {/* Nút Trở lại */}
+      <button
+        className="btn btn-primary mb-2"
+        onClick={() => navigate(-1)} // Quay lại trang trước đó
+      >
+        Trở lại
+      </button>
+      <br></br>
         Chi Tiết Nhân Viên
       </h2>
       <div style={{ fontSize: "2rem", lineHeight: "2rem" }}>

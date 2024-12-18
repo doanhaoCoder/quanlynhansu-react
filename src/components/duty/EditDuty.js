@@ -34,7 +34,7 @@ const EditPosition = () => {
           setFormData(docSnap.data());
         } else {
           toast.error("Chức vụ không tồn tại.");
-          navigate("/dashboard/chuc-vu");
+          navigate("/dashboard/danh-sach-chuc-vu");
         }
 
         // Lấy danh sách các chức vụ để kiểm tra trùng lặp mã
@@ -92,7 +92,7 @@ const EditPosition = () => {
         modifiedBy: sessionUser?.username,
       });
       toast.success("Cập nhật chức vụ thành công!");
-      navigate("/dashboard/chuc-vu");
+      navigate("/dashboard/danh-sach-chuc-vu");
     } catch (error) {
       console.error("Error updating position: ", error);
       toast.error("Không thể cập nhật chức vụ.");
@@ -160,7 +160,7 @@ const EditPosition = () => {
         <button
           type="button"
           className="btn btn-secondary mt-3 ms-2"
-          onClick={() => navigate("/dashboard/chuc-vu")}
+          onClick={() => navigate("/dashboard/danh-sach-chuc-vu")}
         >
           Quay Lại
         </button>

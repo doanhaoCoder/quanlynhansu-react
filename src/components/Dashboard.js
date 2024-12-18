@@ -3,6 +3,8 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // Component React
 import { faUsers } from "@fortawesome/free-solid-svg-icons"; // Biểu tượng cần dùng
 import { faUser } from "@fortawesome/free-solid-svg-icons"; // Đảm bảo đã import faUser
+import { faDollarSign } from "@fortawesome/free-solid-svg-icons";
+
 
 
 const Dashboard = () => {
@@ -171,6 +173,28 @@ const Dashboard = () => {
                 </div>
               </li>
               <li class="nav-item">
+                <a data-bs-toggle="collapse" href="#tables">
+                <FontAwesomeIcon icon={faDollarSign} className="me-2" />
+
+                  <p>   Quản lý lương</p>
+                  <span class="caret"></span>
+                </a>
+                <div class="collapse" id="tables">
+                  <ul class="nav nav-collapse">
+                    <li>
+                      <a href="/dashboard/bang-luong">
+                        <span class="sub-item">Bảng lương</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/dashboard/tinh-luong">
+                        <span class="sub-item">Tính lương</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#forms">
                   <FontAwesomeIcon icon={faUser} /> 
                   <p> Người dùng</p>
@@ -186,27 +210,7 @@ const Dashboard = () => {
                   </ul>
                 </div>
               </li>
-              <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#tables">
-                  <i class="fas fa-table"></i>
-                  <p>Tables</p>
-                  <span class="caret"></span>
-                </a>
-                <div class="collapse" id="tables">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="tables/tables.html">
-                        <span class="sub-item">Basic Table</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="tables/datatables.html">
-                        <span class="sub-item">Datatables</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
+              
               <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#maps">
                   <i class="fas fa-map-marker-alt"></i>
