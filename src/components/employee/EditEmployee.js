@@ -150,6 +150,21 @@ const EditEmployee = () => {
                 onChange={handleChange}
               />
             </div>
+            <div className="mb-3">
+              <label>
+                <strong>Tình trạng hôn nhân</strong>
+              </label>
+              <select
+                className="form-control"
+                name="TinhTrangHonNhan"
+                value={employee.TinhTrangHonNhan}
+                onChange={handleChange}
+              >
+                <option value="">Chọn tình trạng hôn nhân</option>
+                <option value="Đã kết hôn">Đã kết hôn</option>
+                <option value="Chưa kết hôn">Chưa kết hôn</option>
+              </select>
+            </div>
           </div>
 
           {/* Cột phải */}
