@@ -184,7 +184,7 @@ const PositionList = () => {
               <th>Mã Chức Vụ</th>
               <th>Tên Chức Vụ</th>
               <th>Mô Tả</th>
-              <th>Lương (VNĐ)</th>
+              <th>Lương Ngày (VNĐ)</th>
               <th>Người Tạo</th>
               <th>Ngày Tạo</th>
               <th>Người Chỉnh Sửa</th>
@@ -203,7 +203,7 @@ const PositionList = () => {
                     ? `${pos.moTa.substring(0, 50)}...`
                     : pos.moTa}
                 </td>
-                <td>{pos.luong ? pos.luong.toLocaleString() : "Chưa có"}</td>
+                <td>{pos.luong ? pos.luong.toLocaleString() : "Chưa có"} VNĐ</td>
                 <td>{pos.nguoiTao}</td>
                 <td>{new Date(pos.ngayTao).toLocaleDateString()}</td>
                 <td>{pos.modifiedBy || "Chưa chỉnh sửa"}</td>

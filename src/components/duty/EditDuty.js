@@ -131,7 +131,7 @@ const EditPosition = () => {
             />
           </div>
           <div className="col-md-4">
-            <label>Lương (VNĐ)</label>
+            <label>Lương Ngày (VNĐ)</label>
             <input
               type="number"
               className="form-control"

@@ -171,7 +171,7 @@ const EmployeeDetail = () => {
               <strong>Chức vụ:</strong> {employee.tenChucVu}
             </p>
             <p>
-              <strong>Lương:</strong> {employee.luongChucVu} VNĐ
+              <strong>Lương ngày:</strong> {employee.luongChucVu.toLocaleString()} VNĐ
             </p>
           </div>
         </div>
