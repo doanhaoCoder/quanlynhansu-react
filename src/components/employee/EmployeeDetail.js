@@ -13,10 +13,10 @@ const EmployeeDetail = () => {
     const fetchEmployee = async () => {
       try {
         const employeeRef = doc(db, "nhanvien", id); // Dùng ID để lấy tài liệu
-        const employeeSnap = await getDoc(employeeRef);
+        const nhanVienSnap = await getDoc(employeeRef);
         
-        if (employeeSnap.exists()) {
-          const employeeData = employeeSnap.data();
+        if (nhanVienSnap.exists()) {
+          const employeeData = nhanVienSnap.data();
           // console.log("Nhân viên:", employeeData);
 
           if (employeeData.PhongBan) {
@@ -44,8 +44,8 @@ const EmployeeDetail = () => {
           console.log("Dữ liệu nhân viên sau khi thêm TenPhong và TenChucVu:", employeeData);
         }
 
-        if (employeeSnap.exists()) {
-          // setEmployee(employeeSnap.data());
+        if (nhanVienSnap.exists()) {
+          // setEmployee(nhanVienSnap.data());
         } else {
           console.error("No such document!");
         }
