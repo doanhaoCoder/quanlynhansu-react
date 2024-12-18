@@ -1,14 +1,15 @@
-import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from "react";
-import { collection, getDocs, addDoc, deleteDoc, query, where, doc } from "firebase/firestore"; // Thêm 'doc' ở đây
+import { collection, getDocs, addDoc, deleteDoc, query, where, doc } from "firebase/firestore"; 
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
-// import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom'; // Thêm dòng này để sử dụng navigate
 
 const UserList = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate(); // Khai báo navigate
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]); // Danh sách người dùng đã lọc
+  const [searchTerm, setSearchTerm] = useState(""); // Từ khóa tìm kiếm
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -30,6 +31,7 @@ const UserList = () => {
           userData.push({ ...doc.data(), id: doc.id });
         });
         setUsers(userData);
+        setFilteredUsers(userData); // Gán danh sách đã lọc ban đầu
       } catch (error) {
         console.error("Error fetching users: ", error);
         toast.error("Không thể tải danh sách người dùng.");
@@ -41,6 +43,7 @@ const UserList = () => {
     fetchUsers();
   }, []);
 
+  // Hàm xử lý thay đổi trong form
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -49,26 +52,28 @@ const UserList = () => {
     }));
   };
 
-  // Kiểm tra xem username có bị trùng không
-  const checkUsernameExists = async (username) => {
-    const q = query(collection(db, "users"), where("username", "==", username));
-    const querySnapshot = await getDocs(q);
-    return !querySnapshot.empty; // Nếu có kết quả trả về thì trùng
+  // Hàm tìm kiếm người dùng
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+
+    if (e.target.value === "") {
+      setFilteredUsers(users); // Nếu không có từ khóa tìm kiếm, hiển thị tất cả
+    } else {
+      const filtered = users.filter(
+        (user) =>
+          user.username.toLowerCase().includes(e.target.value.toLowerCase()) ||
+          user.email.toLowerCase().includes(e.target.value.toLowerCase())
+      );
+      setFilteredUsers(filtered); // Cập nhật danh sách người dùng đã lọc
+    }
   };
 
   const handleAddUser = async (e) => {
     e.preventDefault();
     const { username, email, password, sdt, role, trangThai } = formData;
 
-    if (!username || !email || !sdt) {
+    if (!username || !email || !sdt || !password) {
       toast.error("Vui lòng điền đầy đủ thông tin.");
-      return;
-    }
-
-    // Kiểm tra username có bị trùng không
-    const isUsernameExist = await checkUsernameExists(username);
-    if (isUsernameExist) {
-      toast.error("Tên đăng nhập này đã tồn tại. Vui lòng chọn tên khác.");
       return;
     }
 
@@ -80,14 +85,13 @@ const UserList = () => {
         sdt,
         role,
         trangThai,
-        createdAt: new Date().toISOString(),
       });
       setFormData({ username: "", email: "", password: "", role: "Nhân viên", sdt: "", trangThai: "Đang hoạt động" });
       toast.success("Thêm tài khoản thành công!");
       // Cập nhật danh sách người dùng
       setUsers((prev) => [
         ...prev,
-        { username, email, password, sdt, role, trangThai, createdAt: new Date().toISOString() },
+        { username, email, password, sdt, role, trangThai },
       ]);
     } catch (error) {
       console.error("Error adding user: ", error);
@@ -95,15 +99,12 @@ const UserList = () => {
     }
   };
 
-  const handleEdit = (id) => {
-    navigate(`/dashboard/chinh-sua-nguoi-dung/${id}`);  // Sử dụng navigate đúng cách
-  };
-
   const handleDelete = async (id) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa người dùng này?")) {
       try {
         await deleteDoc(doc(db, "users", id));
         setUsers(users.filter((user) => user.id !== id));
+        setFilteredUsers(filteredUsers.filter((user) => user.id !== id)); // Cập nhật danh sách người dùng đã lọc
         toast.success("Xóa tài khoản thành công!");
       } catch (error) {
         console.error("Error deleting user: ", error);
@@ -115,6 +116,19 @@ const UserList = () => {
   return (
     <div className="mt-5">
       <h2>Danh Sách Tài Khoản</h2>
+
+      {/* Thanh tìm kiếm */}
+      <div className="row g-3 mb-4">
+        <div className="col-md-4">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Tìm kiếm theo tên hoặc email..."
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+        </div>
+      </div>
 
       {/* Form thêm tài khoản */}
       <form onSubmit={handleAddUser} className="mt-4">
@@ -175,17 +189,6 @@ const UserList = () => {
             </select>
           </div>
           <div className="col-md-2">
-            <select
-              className="form-control"
-              name="trangThai"
-              value={formData.trangThai}
-              onChange={handleChange}
-            >
-              <option value="Đang hoạt động">Đang hoạt động</option>
-              <option value="Ngừng hoạt động">Ngừng hoạt động</option>
-            </select>
-          </div>
-          <div className="col-md-2">
             <button type="submit" className="btn btn-primary w-100">
               Thêm Tài Khoản
             </button>
@@ -206,12 +209,11 @@ const UserList = () => {
               <th>Số Điện Thoại</th>
               <th>Vai Trò</th>
               <th>Trạng Thái</th>
-              {/* <th>Ngày Tạo</th> */}
               <th>Hành Động</th>
             </tr>
           </thead>
           <tbody>
-            {users.map((user, index) => (
+            {filteredUsers.map((user, index) => (
               <tr key={user.id}>
                 <td>{index + 1}</td>
                 <td>{user.username}</td>
@@ -219,13 +221,10 @@ const UserList = () => {
                 <td>{user.sdt}</td>
                 <td>{user.role}</td>
                 <td>{user.trangThai}</td>
-                {/* <td>{new Date(user.createdAt).toLocaleDateString()}</td> */}
                 <td>
-                <button
+                  <button
                     className="btn btn-warning btn-sm me-2"
-                    onClick={() =>
-                      navigate(`/dashboard/chinh-sua-nguoi-dung/${user.id}`)
-                    }
+                    onClick={() => navigate(`/dashboard/chinh-sua-nguoi-dung/${user.id}`)}
                   >
                     <FaEdit /> Sửa
                   </button>

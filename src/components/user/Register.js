@@ -14,8 +14,8 @@ const Register = () => {
     ten: "",
     email: "",
     sdt: "",
-    role: "Nhân viên", // Default role
-    trangThai: "Không hoạt động", // Default status
+    role: "Chờ phê duyệt", // Default role
+    trangThai: "Chờ phê duyệt", // Default status
   });
 
   const handleInputChange = (e) => {
