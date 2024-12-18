@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
 
@@ -29,19 +29,50 @@ const EditEmployee = () => {
     MaBH: "",
     TinhTrang: "",
     GhiChu: "",
+    PhongBan: "",
+    ChucVu: "",
   });
+
+  const [phongbanList, setPhongbanList] = useState([]);
+  const [chucvuList, setChucvuList] = useState([]);
 
   useEffect(() => {
     const fetchEmployee = async () => {
       try {
-        const docRef = doc(db, "nhanvien", id);
+        const docRef = doc(db, "nhanvien", id); // Lấy nhân viên theo ID
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setEmployee(docSnap.data());
+          const employeeData = docSnap.data();
+          // console.log("Nhân viên:", employeeData);
+
+          if (employeeData.PhongBan) {
+            const phongRef = doc(db, "phongban", employeeData.PhongBan);
+            const phongSnap = await getDoc(phongRef);
+            if (phongSnap.exists()) {
+              const phongData = phongSnap.data();
+              employeeData.tenPhong = phongData.tenPhong; // Kiểm tra tên trường tại đây
+              console.log("check: ", employeeData.tenPhong);
+            }
+          }
+          
+          if (employeeData.ChucVu) {
+            const chucVuRef = doc(db, "chucvu", employeeData.ChucVu);
+            const chucVuSnap = await getDoc(chucVuRef);
+            if (chucVuSnap.exists()) {
+              const chucVuData = chucVuSnap.data();
+              employeeData.tenChucVu = chucVuData.tenChucVu; // Kiểm tra tên trường tại đây
+            }
+          }
+          
+
+          // Cập nhật state employee với dữ liệu đầy đủ
+          setEmployee(employeeData);
+          console.log("Dữ liệu nhân viên sau khi thêm TenPhong và TenChucVu:", employeeData);
         } else {
+          console.log("Không tìm thấy nhân viên với ID:", id);
           toast.error("Không tìm thấy nhân viên!");
-          navigate("/dashboard");
+          navigate("/dashboard/danh-sach-nhan-vien");
         }
       } catch (error) {
         console.error("Error fetching employee data: ", error);
@@ -52,14 +83,40 @@ const EditEmployee = () => {
     fetchEmployee();
   }, [id, navigate]);
 
+  useEffect(() => {
+    const fetchPhongbanAndChucvu = async () => {
+      try {
+        const phongbanSnap = await getDocs(collection(db, "phongban"));
+        const chucvuSnap = await getDocs(collection(db, "chucvu"));
+
+        setPhongbanList(phongbanSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+        setChucvuList(chucvuSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+
+        console.log("Danh sách phòng ban:", phongbanList);
+        console.log("Danh sách chức vụ:", chucvuList);
+      } catch (error) {
+        console.error("Error fetching phongban and chucvu: ", error);
+        toast.error("Lỗi khi tải dữ liệu phòng ban và chức vụ.");
+      }
+    };
+
+    fetchPhongbanAndChucvu();
+  }, []);
+
   // Hàm xử lý cập nhật nhân viên
   const handleUpdate = async (e) => {
     e.preventDefault();
+    if (!employee.HoTenNV || !employee.Email || !employee.PhongBan || !employee.ChucVu) {
+      toast.error("Vui lòng điền đầy đủ thông tin bắt buộc!");
+      return;
+    }
+
     try {
+      console.log("Dữ liệu nhân viên sắp được cập nhật:", employee);
       const docRef = doc(db, "nhanvien", id);
       await updateDoc(docRef, employee);
       toast.success("Cập nhật nhân viên thành công!");
-      navigate("/dashboard");
+      navigate("/dashboard/danh-sach-nhan-vien");
     } catch (error) {
       console.error("Error updating employee: ", error);
       toast.error("Không thể cập nhật nhân viên.");
@@ -165,8 +222,28 @@ const EditEmployee = () => {
                 <option value="Chưa kết hôn">Chưa kết hôn</option>
               </select>
             </div>
+            <div className="mb-3">
+          <label>
+            <strong>Phòng ban</strong>
+          </label>
+          <select
+            className="form-control"
+            name="PhongBan"
+            value={employee.PhongBan}
+            onChange={handleChange}
+          >
+            <option value={employee.PhongBan}>
+              {phongbanList.find((pb) => pb.id === employee.PhongBan)?.tenPhong || "Không xác định"}
+            </option>
+            {phongbanList.map((pb) => (
+              <option key={pb.id} value={pb.id}>
+                {pb.tenPhong}
+              </option>
+            ))}
+          </select>
+        </div>
           </div>
-
+          
           {/* Cột phải */}
           <div className="col-6">
             <div className="mb-3">
@@ -266,9 +343,32 @@ const EditEmployee = () => {
                 {/* <option value="Tạm ngừng">Tạm ngừng</option> */}
               </select>
             </div>
+            <div className="mb-3">
+          <label>
+        
+            <strong>Chức vụ</strong>
+          </label>
+          <select
+            className="form-control"
+            name="ChucVu"
+            value={employee.ChucVu}
+            onChange={handleChange}
+          >
+            <option value={employee.ChucVu}>
+              {chucvuList.find((cv) => cv.id === employee.ChucVu)?.tenChucVu || "Không xác định"}
+            </option>
+            {chucvuList.map((cv) => (
+              <option key={cv.id} value={cv.id}>
+                {cv.tenChucVu}
+              </option>
+            ))}
+          </select>
+        </div>
           </div>
         </div>
 
+        
+        
         {/* Hàng thứ 3 */}
         <div className="row mt-4">
           <div className="col-12">
@@ -284,7 +384,7 @@ const EditEmployee = () => {
             ></textarea>
           </div>
         </div>
-
+        {/* Nút Lưu và Hủy */}
         <div className="mt-4">
           <button type="submit" className="btn btn-primary me-2">
             Lưu thay đổi
@@ -292,7 +392,7 @@ const EditEmployee = () => {
           <button
             type="button"
             className="btn btn-secondary"
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/dashboard/danh-sach-nhan-vien")}
           >
             Hủy
           </button>

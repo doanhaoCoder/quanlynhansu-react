@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 import { toast } from "react-toastify"; // Import react-toastify
@@ -11,11 +11,53 @@ const AddEmployee = () => {
     Email: "",
     SDT: "",
     NgaySinh: "",
-    GioiTinh: "Nam", // Mặc định là Nam
+    GioiTinh: "Nam",
     GhiChu: "",
+    ChucVu: "",    // Chức vụ
+    PhongBan: "",  // Phòng ban
   });
 
   const [error, setError] = useState("");
+  const [chucVuList, setChucVuList] = useState([]);
+  const [phongBanList, setPhongBanList] = useState([]);
+
+  // Lấy danh sách chức vụ từ Firestore
+  useEffect(() => {
+    const fetchChucVu = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "chucvu"));
+        const chucVuData = [];
+        querySnapshot.forEach((doc) => {
+          chucVuData.push({ id: doc.id, ...doc.data() });
+        });
+        console.log("Danh sách chức vụ:", chucVuData); // In ra để kiểm tra dữ liệu
+        setChucVuList(chucVuData);
+      } catch (error) {
+        console.error("Error fetching chucvu data: ", error);
+      }
+    };
+
+    fetchChucVu();
+  }, []);
+
+  // Lấy danh sách phòng ban từ Firestore
+  useEffect(() => {
+    const fetchPhongBan = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "phongban"));
+        const phongBanData = [];
+        querySnapshot.forEach((doc) => {
+          phongBanData.push({ id: doc.id, ...doc.data() });
+        });
+        console.log("Danh sách phòng ban:", phongBanData); // In ra để kiểm tra dữ liệu
+        setPhongBanList(phongBanData);
+      } catch (error) {
+        console.error("Error fetching phongban data: ", error);
+      }
+    };
+
+    fetchPhongBan();
+  }, []);
 
   // Hàm để cập nhật giá trị input
   const handleChange = (e) => {
@@ -56,7 +98,9 @@ const AddEmployee = () => {
       !employee.CCCD ||
       !employee.Email ||
       !employee.SDT ||
-      !employee.NgaySinh
+      !employee.NgaySinh ||
+      !employee.ChucVu ||
+      !employee.PhongBan
     ) {
       setError("Vui lòng điền đầy đủ thông tin (trừ GhiChú).");
       return;
@@ -94,8 +138,10 @@ const AddEmployee = () => {
         Email: "",
         SDT: "",
         NgaySinh: "",
-        GioiTinh: "Nam", // Reset lại giá trị mặc định cho giới tính
+        GioiTinh: "Nam",
         GhiChu: "",
+        ChucVu: "",
+        PhongBan: "",
       });
       setError(""); // Xóa lỗi nếu có
     } catch (error) {
@@ -221,6 +267,50 @@ const AddEmployee = () => {
               onChange={handleChange}
               required
             />
+          </div>
+        </div>
+
+        <div className="row mt-3">
+          <div className="col-6">
+            <label htmlFor="PhongBan" className="form-label">
+              Phòng ban
+            </label>
+            <select
+              id="PhongBan"
+              name="PhongBan"
+              className="form-control"
+              value={employee.PhongBan}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Chọn phòng ban</option>
+              {phongBanList.map((phongBan) => (
+                <option key={phongBan.id} value={phongBan.id}>
+                  {phongBan.tenPhong}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="col-6">
+            <label htmlFor="ChucVu" className="form-label">
+              Chức vụ
+            </label>
+            <select
+              id="ChucVu"
+              name="ChucVu"
+              className="form-control"
+              value={employee.ChucVu}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Chọn chức vụ</option>
+              {chucVuList.map((chucVu) => (
+                <option key={chucVu.id} value={chucVu.id}>
+                  {chucVu.tenChucVu}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 

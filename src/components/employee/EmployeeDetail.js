@@ -134,6 +134,15 @@ const EmployeeDetail = () => {
             <p>
               <strong>Ghi chú:</strong> {employee.GhiChu}
             </p>
+            <p>
+              <strong>Phòng ban:</strong> {employee.MaThueTNCN}
+            </p>
+            <p>
+              <strong>Chức vụ:</strong> {employee.MaThueTNCN}
+            </p>
+            <p>
+              <strong>Lương:</strong> {employee.MaThueTNCN}
+            </p>
           </div>
         </div>
       </div>
