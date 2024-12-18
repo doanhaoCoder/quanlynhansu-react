@@ -55,7 +55,7 @@ const App = () => {
           <Route path="danh-sach-chuc-vu" element={<DutyList />} />
           <Route path="chinh-sua-chuc-vu/:id" element={<EditDuty />} />
           <Route path="danh-sach-nguoi-dung" element={<UserList />} />
-          <Route path="chinh-sua-nguoi-dung" element={<EditUser />} />
+          <Route path="chinh-sua-nguoi-dung/:id" element={<EditUser />} />
           
         </Route>
       </Routes>

@@ -206,7 +206,7 @@ const UserList = () => {
               <th>Số Điện Thoại</th>
               <th>Vai Trò</th>
               <th>Trạng Thái</th>
-              <th>Ngày Tạo</th>
+              {/* <th>Ngày Tạo</th> */}
               <th>Hành Động</th>
             </tr>
           </thead>
@@ -219,12 +219,12 @@ const UserList = () => {
                 <td>{user.sdt}</td>
                 <td>{user.role}</td>
                 <td>{user.trangThai}</td>
-                <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                {/* <td>{new Date(user.createdAt).toLocaleDateString()}</td> */}
                 <td>
                 <button
                     className="btn btn-warning btn-sm me-2"
                     onClick={() =>
-                      navigate(`/dashboard/chinh-sua-nhan-vien/${user.id}`)
+                      navigate(`/dashboard/chinh-sua-nguoi-dung/${user.id}`)
                     }
                   >
                     <FaEdit /> Sửa

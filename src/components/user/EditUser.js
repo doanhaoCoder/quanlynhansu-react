@@ -1,40 +1,45 @@
 import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
-import { useNavigate, useParams } from "react-router-dom"; // Import useNavigate và useParams
 
 const EditUser = () => {
+  const { id } = useParams(); // Lấy ID từ URL
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
+    sdt: "",
+    role: "Nhân viên",
+    trangThai: "Đang hoạt động",
   });
   const [loading, setLoading] = useState(true);
-  const { userId } = useParams();  // Lấy id người dùng từ URL
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
       setLoading(true);
       try {
-        const userDoc = await getDoc(doc(db, "users", userId));
-        if (userDoc.exists()) {
-          setFormData(userDoc.data());
+        const userRef = doc(db, "users", id);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+          setFormData(userSnap.data());
         } else {
           toast.error("Người dùng không tồn tại.");
-          navigate("/dashboard/users");  // Quay lại danh sách người dùng nếu không tìm thấy
+          navigate("/dashboard/danh-sach-nguoi-dung");
         }
       } catch (error) {
         console.error("Error fetching user: ", error);
-        toast.error("Không thể tải thông tin người dùng.");
+        toast.error("Không thể tải dữ liệu người dùng.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchUser();
-  }, [userId, navigate]);
+  }, [id, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,77 +51,108 @@ const EditUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const { username, email, sdt, role, trangThai } = formData;
 
-    if (!formData.username || !formData.email || !formData.password) {
+    if (!username || !email || !sdt) {
       toast.error("Vui lòng điền đầy đủ thông tin.");
       return;
     }
 
     try {
-      const userRef = doc(db, "users", userId);
-      await updateDoc(userRef, formData);
-      toast.success("Cập nhật người dùng thành công!");
-      navigate("/dashboard/users");  // Quay lại trang danh sách người dùng
+      const userRef = doc(db, "users", id);
+      await updateDoc(userRef, {
+        username,
+        email,
+        sdt,
+        role,
+        trangThai,
+      });
+      toast.success("Cập nhật thông tin thành công!");
+      navigate("/dashboard/danh-sach-nguoi-dung");
     } catch (error) {
       console.error("Error updating user: ", error);
-      toast.error("Không thể cập nhật người dùng.");
+      toast.error("Không thể cập nhật thông tin.");
     }
   };
 
   return (
-    <div>
+    <div className="container mt-5">
       <h2>Chỉnh Sửa Người Dùng</h2>
-
       {loading ? (
         <div>Loading...</div>
       ) : (
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label htmlFor="username" className="form-label">
-              Username
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-            />
+        <form onSubmit={handleSubmit} className="mt-4">
+          <div className="row g-3">
+            <div className="col-md-6">
+              <label className="form-label">Tên Đăng Nhập</label>
+              <input
+                type="text"
+                className="form-control"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label">Email</label>
+              <input
+                type="email"
+                className="form-control"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label">Số Điện Thoại</label>
+              <input
+                type="text"
+                className="form-control"
+                name="sdt"
+                value={formData.sdt}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label">Vai Trò</label>
+              <select
+                className="form-control"
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+              >
+                <option value="Nhân viên">Nhân viên</option>
+                <option value="Quản trị viên">Quản trị viên</option>
+              </select>
+            </div>
+            <div className="col-md-6">
+              <label className="form-label">Trạng Thái</label>
+              <select
+                className="form-control"
+                name="trangThai"
+                value={formData.trangThai}
+                onChange={handleChange}
+              >
+                <option value="Đang hoạt động">Đang hoạt động</option>
+                <option value="Ngừng hoạt động">Ngừng hoạt động</option>
+              </select>
+            </div>
+            <div className="col-md-12">
+              <button type="submit" className="btn btn-primary">
+                Lưu Thay Đổi
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary ms-3"
+                onClick={() => navigate("/dashboard/danh-sach-nguoi-dung")}
+              >
+                Quay Lại
+              </button>
+            </div>
           </div>
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">
-              Email
-            </label>
-            <input
-              type="email"
-              className="form-control"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">
-              Password
-            </label>
-            <input
-              type="password"
-              className="form-control"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <button type="submit" className="btn btn-primary">
-            Cập Nhật
-          </button>
         </form>
       )}
     </div>
