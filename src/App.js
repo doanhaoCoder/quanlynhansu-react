@@ -27,6 +27,9 @@ import EditDuty from "./components/duty/EditDuty";
 import UserList from "./components/user/UserList";
 import EditUser from "./components/user/EditUser";
 
+import TinhLuong from "./components/TinhLuong";
+
+
 
 
 const App = () => {
@@ -56,6 +59,7 @@ const App = () => {
           <Route path="chinh-sua-chuc-vu/:id" element={<EditDuty />} />
           <Route path="danh-sach-nguoi-dung" element={<UserList />} />
           <Route path="chinh-sua-nguoi-dung/:id" element={<EditUser />} />
+          <Route path="tinh-luong" element={<TinhLuong />} />
           
         </Route>
       </Routes>
