@@ -9,11 +9,12 @@ import {
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 
 const BangLuong = () => {
   const navigate = useNavigate(); // Khai báo hook navigate
-
-  // Hàm xử lý khi nhấn nút "Xem Chi Tiết"
 
   const { id } = useParams(); // Lấy ID nhân viên từ URL
   const [employee, setEmployee] = useState(null);
@@ -95,6 +96,18 @@ const BangLuong = () => {
     setBangLuong(sortedData);
   };
 
+  // Hàm render icon sắp xếp
+  const renderSortIcon = (key) => {
+    if (sortConfig && sortConfig.key === key) {
+      return sortConfig.direction === "ascending" ? (
+        <FontAwesomeIcon icon={faArrowUp} />
+      ) : (
+        <FontAwesomeIcon icon={faArrowDown} />
+      );
+    }
+    return <FaSort />; 
+  };
+
   // Xử lý xóa bản ghi
   const handleDelete = async (id) => {
     try {
@@ -137,10 +150,6 @@ const BangLuong = () => {
       item.TenNhanVien.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // const handleViewDetails = (maLuong) => {
-  //   navigate(`/chi-tiet-bang-luong/${item.id}`); // Điều hướng đến trang chi tiết với mã lương
-  // };
-
   return (
     <div className="container mt-4">
       <h2>Bảng Lương</h2>
@@ -171,13 +180,13 @@ const BangLuong = () => {
       <table className="table table-bordered table-striped mt-3">
         <thead className="table-dark">
           <tr>
-            <th onClick={() => handleSort("stt")}>STT</th>
-            <th onClick={() => handleSort("MaLuong")}>Mã Lương</th>
-            <th onClick={() => handleSort("TenNhanVien")}>Tên Nhân Viên</th>
-            <th onClick={() => handleSort("ChucVu")}>Chức Vụ</th>
-            <th onClick={() => handleSort("SoNgayCong")}>Số Ngày Công</th>
-            <th onClick={() => handleSort("TongLuong")}>Tổng Lương</th>
-            <th onClick={() => handleSort("NgayTinhLuong")}>Ngày Chấm</th>
+            <th onClick={() => handleSort("stt")}>STT {renderSortIcon("stt")}</th>
+            <th onClick={() => handleSort("MaLuong")}>Mã Lương {renderSortIcon("MaLuong")}</th>
+            <th onClick={() => handleSort("TenNhanVien")}>Tên Nhân Viên {renderSortIcon("TenNhanVien")}</th>
+            <th onClick={() => handleSort("ChucVu")}>Chức Vụ {renderSortIcon("ChucVu")}</th>
+            <th onClick={() => handleSort("SoNgayCong")}>Số Ngày Công {renderSortIcon("SoNgayCong")}</th>
+            <th onClick={() => handleSort("TongLuong")}>Tổng Lương {renderSortIcon("TongLuong")}</th>
+            <th onClick={() => handleSort("NgayTinhLuong")}>Ngày Chấm {renderSortIcon("NgayTinhLuong")}</th>
             <th>Hành động</th>
           </tr>
         </thead>
@@ -196,7 +205,7 @@ const BangLuong = () => {
                   className="btn btn-info me-2"
                   onClick={() =>
                     navigate(`/dashboard/chi-tiet-bang-luong/${item.id}`)
-                  } // Chuyển đến trang chi tiết
+                  }
                 >
                   Xem Chi Tiết
                 </button>

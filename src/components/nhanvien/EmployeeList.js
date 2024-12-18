@@ -3,14 +3,20 @@ import { Link, useNavigate } from "react-router-dom";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
-import {
-  FaEye,
-  FaEdit,
-  FaTrashAlt,
-  FaSort,
-  FaSortUp,
-  FaSortDown,
-} from "react-icons/fa";
+// import {
+//   FaEye,
+//   FaEdit,
+//   FaTrashAlt,
+//   FaSort,
+//   FaSortUp,
+//   FaSortDown,
+// } from "react-icons/fa";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import { FaEye, FaEdit, FaTrashAlt } from "react-icons/fa";
+import { FaSort } from "react-icons/fa";
+
+
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
@@ -89,7 +95,7 @@ const EmployeeList = () => {
   // Hàm hiển thị icon sắp xếp
   const renderSortIcon = (column) => {
     if (sortColumn === column) {
-      return sortOrder === "asc" ? <FaSortUp /> : <FaSortDown />;
+      return sortOrder === "asc" ? <FontAwesomeIcon icon={faArrowUp} /> :  <FontAwesomeIcon icon={faArrowDown} />
     }
     return <FaSort />;
   };
