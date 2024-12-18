@@ -14,34 +14,25 @@ const EmployeeDetail = () => {
       try {
         const bangluonRef = doc(db, "Luong", id); // Dùng ID để lấy tài liệu
         const bangluonSnap = await getDoc(bangluonRef);
-        
+
         if (bangluonSnap.exists()) {
           const employeeData = bangluonSnap.data();
           // console.log("Nhân viên:", employeeData);
 
-          if (employeeData.PhongBan) {
-            const phongRef = doc(db, "phongban", employeeData.PhongBan);
-            const phongSnap = await getDoc(phongRef);
-            if (phongSnap.exists()) {
-              const phongData = phongSnap.data();
-              employeeData.tenPhong = phongData.tenPhong; // Kiểm tra tên trường tại đây
-              console.log("check: ", employeeData.tenPhong);
-            }
-          }
-          
-          if (employeeData.ChucVu) {
-            const chucVuRef = doc(db, "chucvu", employeeData.ChucVu);
+          if (employeeData.NhanVienID) {
+            const chucVuRef = doc(db, "nhanvien", employeeData.NhanVienID);
             const chucVuSnap = await getDoc(chucVuRef);
             if (chucVuSnap.exists()) {
               const chucVuData = chucVuSnap.data();
               employeeData.tenChucVu = chucVuData.tenChucVu; // Kiểm tra tên trường tại đây
-              employeeData.luongChucVu = chucVuData.luong; // Kiểm tra tên trường tại đây
+              employeeData.tenNV = chucVuData.HoTenNV; // Kiểm tra tên trường tại đây
+              employeeData.maNV = chucVuData.MaNV; // Kiểm tra tên trường tại đây
             }
           }
-
+          
           // Cập nhật state employee với dữ liệu đầy đủ
           setbangLuong(employeeData);
-          console.log("Dữ liệu nhân viên sau khi thêm TenPhong và TenChucVu:", employeeData);
+          console.log("Dữ liệu:", employeeData);
         }
 
         if (bangluonSnap.exists()) {
@@ -69,10 +60,70 @@ const EmployeeDetail = () => {
 
   // Hiển thị chi tiết nhân viên
   return (
-    <div>
-      {bangLuong.GhiChu}
+    <div className="container mt-5">
+    <h2 className="mb-4" style={{ fontSize: "2rem", fontWeight: "bold" }}>
+      Chi Tiết Bảng Lương
+    </h2>
+    <div style={{ fontSize: "2rem", lineHeight: "2rem" }}>
+      <div className="row">
+        <div className="col-6">
+        <p className="text-danger" style={{ fontSize: "1.8rem", lineHeight: "2rem" }}>
+
+            <strong>Mã Lương:</strong> {bangLuong.MaLuong}
+          </p>
+          <p className="text-danger" style={{ fontSize: "1.8rem", lineHeight: "2rem" }}>
+
+            <strong>Tên Nhân Viên:</strong> {bangLuong.tenNV}
+          </p>
+          <p>
+            <strong>Mã Nhân Viên:</strong> {bangLuong.maNV}
+          </p>
+          <p>
+            <strong>Chức Vụ:</strong> {bangLuong.tenChucVu}
+          </p>
+          <p>
+            <strong>Lương Ngày:</strong> {bangLuong.LuongNgay.toLocaleString()} VNĐ
+          </p>
+        </div>
+        <div className="col-6">
+          <p>
+            <strong>Số Ngày Công:</strong> {bangLuong.SoNgayCong}
+          </p>
+          <p>
+            <strong>Phụ Cấp:</strong> {bangLuong.PhuCap.toLocaleString()} VNĐ
+          </p>
+          <p>
+            <strong>Thưởng:</strong> {bangLuong.Thuong.toLocaleString()} VNĐ
+          </p>
+          <p className="text-danger" style={{ fontSize: "1.8rem", lineHeight: "2rem" }}>
+
+            <strong>Tổng Lương:</strong> {bangLuong.TongLuong.toLocaleString()} VNĐ
+          </p>
+          <p>
+            <strong>Ghi Chú:</strong> {bangLuong.GhiChu}
+          </p>
+        </div>
+      </div>
+
+      <div className="row mt-4">
+        <div className="col-6">
+          <p>
+            <strong>Ngày Tính Lương:</strong> {new Date(bangLuong.NgayTinhLuong).toLocaleDateString()}
+          </p>
+          <p>
+            <strong>Ngày Tạo Bảng:</strong> {new Date(bangLuong.NgayTao).toLocaleString()}
+          </p>
+          <p>
+            <strong>Người Tạo Bảng:</strong> {bangLuong.NguoiTao}
+          </p>
+        </div>
+        <div className="col-6">
+          
+        </div>
+      </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default EmployeeDetail;

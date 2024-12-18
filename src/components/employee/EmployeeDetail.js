@@ -76,7 +76,7 @@ const EmployeeDetail = () => {
       <div style={{ fontSize: "2rem", lineHeight: "2rem" }}>
         <div className="row">
           <div className="col-6">
-            <p>
+          <p className="text-danger" style={{ fontSize: "1.8rem", lineHeight: "2rem" }}>
               <strong>Mã nhân viên:</strong> {employee.MaNV}
             </p>
             <p>
