@@ -9,23 +9,23 @@ import {
 
 import Dashboard from "./components/Dashboard";
 
-import EmployeeList from "./components/employee/EmployeeList";
-import AddEmployee from "./components/employee/AddEmployee";
-import EmployeeDetail from "./components/employee/EmployeeDetail";
-import EditEmployee from "./components/employee/EditEmployee";
+import EmployeeList from "./components/nhanvien/EmployeeList";
+import AddEmployee from "./components/nhanvien/AddEmployee";
+import EmployeeDetail from "./components/nhanvien/EmployeeDetail";
+import EditEmployee from "./components/nhanvien/EditEmployee";
 
-import Register from "./components/user/Register";
-import Login from "./components/user/Login";
+import Register from "./components/nguoidung/Register";
+import Login from "./components/nguoidung/Login";
 import PrivateRoute from "./components/PrivateRoute";
 
-import DepartmentList from "./components/department/DepartmentList";
-import EditDepartment from "./components/department/EditDepartment";
+import DepartmentList from "./components/phongban/DepartmentList";
+import EditDepartment from "./components/phongban/EditDepartment";
 
-import DutyList from "./components/duty/DutyList";
-import EditDuty from "./components/duty/EditDuty";
+import DutyList from "./components/chucvu/DutyList";
+import EditDuty from "./components/chucvu/EditDuty";
 
-import UserList from "./components/user/UserList";
-import EditUser from "./components/user/EditUser";
+import UserList from "./components/nguoidung/UserList";
+import EditUser from "./components/nguoidung/EditUser";
 
 import TinhLuong from "./components/luong/TinhLuong";
 import BangLuong from "./components/luong/BangLuong";
