@@ -195,7 +195,7 @@ const BangLuong = () => {
                 <button
                   className="btn btn-info me-2"
                   onClick={() =>
-                    navigate(`/dashboard/chi-tiet-bang-luong/${item.maLuong}`)
+                    navigate(`/dashboard/chi-tiet-bang-luong/${item.id}`)
                   } // Chuyển đến trang chi tiết
                 >
                   Xem Chi Tiết

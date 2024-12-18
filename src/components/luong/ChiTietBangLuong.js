@@ -1,125 +1,78 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom"; // Sử dụng useNavigate
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase";
-import { toast } from "react-toastify";
 
-const ChiTietBangLuong = () => {
-  const { maLuong } = useParams(); // Lấy mã lương từ URL
-  const [bangLuong, setBangLuong] = useState(null); // Lưu trữ thông tin bảng lương
-  const [nhanVien, setNhanVien] = useState(null); // Lưu trữ thông tin nhân viên
-  const navigate = useNavigate(); // Khai báo hook navigate
+const EmployeeDetail = () => {
+  const { id } = useParams(); // Lấy ID nhân viên từ URL
+  const [bangLuong, setbangLuong] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Lấy dữ liệu bảng lương và nhân viên từ Firestore
+  // Hàm lấy thông tin chi tiết nhân viên
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchEmployee = async () => {
       try {
-        // Lấy dữ liệu bảng lương theo MaLuong
-        const bangLuongRef = doc(db, "Luong", maLuong);
-        const bangLuongSnap = await getDoc(bangLuongRef);
+        const bangluonRef = doc(db, "Luong", id); // Dùng ID để lấy tài liệu
+        const bangluonSnap = await getDoc(bangluonRef);
+        
+        if (bangluonSnap.exists()) {
+          const employeeData = bangluonSnap.data();
+          // console.log("Nhân viên:", employeeData);
 
-        if (bangLuongSnap.exists()) {
-          const bangLuongData = bangLuongSnap.data();
-          setBangLuong(bangLuongData);
-
-          // Lấy thông tin nhân viên từ NhanVienID trong bảng lương
-          if (bangLuongData.NhanVienID) {
-            const nhanVienRef = doc(db, "nhanvien", bangLuongData.NhanVienID);
-            const nhanVienSnap = await getDoc(nhanVienRef);
-
-            if (nhanVienSnap.exists()) {
-              setNhanVien(nhanVienSnap.data());
-            } else {
-              toast.error("Không tìm thấy thông tin nhân viên!");
+          if (employeeData.PhongBan) {
+            const phongRef = doc(db, "phongban", employeeData.PhongBan);
+            const phongSnap = await getDoc(phongRef);
+            if (phongSnap.exists()) {
+              const phongData = phongSnap.data();
+              employeeData.tenPhong = phongData.tenPhong; // Kiểm tra tên trường tại đây
+              console.log("check: ", employeeData.tenPhong);
             }
-          } else {
-            toast.error("Không có mã nhân viên trong bảng lương!");
           }
+          
+          if (employeeData.ChucVu) {
+            const chucVuRef = doc(db, "chucvu", employeeData.ChucVu);
+            const chucVuSnap = await getDoc(chucVuRef);
+            if (chucVuSnap.exists()) {
+              const chucVuData = chucVuSnap.data();
+              employeeData.tenChucVu = chucVuData.tenChucVu; // Kiểm tra tên trường tại đây
+              employeeData.luongChucVu = chucVuData.luong; // Kiểm tra tên trường tại đây
+            }
+          }
+
+          // Cập nhật state employee với dữ liệu đầy đủ
+          setbangLuong(employeeData);
+          console.log("Dữ liệu nhân viên sau khi thêm TenPhong và TenChucVu:", employeeData);
+        }
+
+        if (bangluonSnap.exists()) {
+          // setbangLuong(bangluonSnap.data());
         } else {
-          toast.error("Không tìm thấy bảng lương!");
+          console.error("No such document!");
         }
       } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu:", error);
-        toast.error("Lỗi khi tải dữ liệu.");
+        console.error("Error fetching employee: ", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchData();
-  }, [maLuong]);
+    fetchEmployee();
+  }, [id]);
 
-  // Kiểm tra nếu dữ liệu chưa có
-  if (!bangLuong || !nhanVien) {
+  if (loading) {
     return <div>Loading...</div>;
   }
 
-  return (
-    <div className="container mt-4">
-      <h2>Chi Tiết Bảng Lương</h2>
-      <button
-        className="btn btn-secondary mb-3"
-        onClick={() => navigate("/bang-luong")} // Thay thế history.push bằng navigate
-      >
-        Quay lại danh sách bảng lương
-      </button>
+  if (!bangLuong) {
+    return <div>Không tìm thấy thông tin nhân viên.</div>;
+  }
 
-      <table className="table table-bordered">
-        <tbody>
-          <tr>
-            <th>Mã Lương</th>
-            <td>{bangLuong.MaLuong}</td>
-          </tr>
-          <tr>
-            <th>Tên Nhân Viên</th>
-            <td>{nhanVien.HoTenNV}</td>
-          </tr>
-          <tr>
-            <th>Chức Vụ</th>
-            <td>{nhanVien.ChucVu}</td>
-          </tr>
-          <tr>
-            <th>Lương Chức Vụ</th>
-            <td>{nhanVien.Luong}</td>
-          </tr>
-          <tr>
-            <th>Số Ngày Công</th>
-            <td>{bangLuong.SoNgayCong}</td>
-          </tr>
-          <tr>
-            <th>Tổng Lương</th>
-            <td>{bangLuong.TongLuong.toLocaleString()} đ</td>
-          </tr>
-          <tr>
-            <th>Phụ Cấp</th>
-            <td>{bangLuong.Phucap.toLocaleString()} đ</td>
-          </tr>
-          <tr>
-            <th>Thưởng</th>
-            <td>{bangLuong.Thuong.toLocaleString()} đ</td>
-          </tr>
-          <tr>
-            <th>Lương Ngày</th>
-            <td>{bangLuong.LuongNgay.toLocaleString()} đ</td>
-          </tr>
-          <tr>
-            <th>Ngày Tính Lương</th>
-            <td>{new Date(bangLuong.NgayTinhLuong).toLocaleDateString()}</td>
-          </tr>
-          <tr>
-            <th>Ngày Tạo</th>
-            <td>{new Date(bangLuong.NgayTao).toLocaleString()}</td>
-          </tr>
-          <tr>
-            <th>Người Tạo</th>
-            <td>{bangLuong.NguoiTao}</td>
-          </tr>
-          <tr>
-            <th>Ghi Chú</th>
-            <td>{bangLuong.GhiChu}</td>
-          </tr>
-        </tbody>
-      </table>
+  // Hiển thị chi tiết nhân viên
+  return (
+    <div>
+      {bangLuong.GhiChu}
     </div>
   );
 };
 
-export default ChiTietBangLuong;
+export default EmployeeDetail;
