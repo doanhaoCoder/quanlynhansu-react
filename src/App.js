@@ -18,6 +18,12 @@ import Register from "./components/user/Register";
 import Login from "./components/user/Login";
 import PrivateRoute from "./components/PrivateRoute";
 
+import DepartmentList from "./components/department/DepartmentList";
+import EditDepartment from "./components/department/EditDepartment";
+
+import DutyList from "./components/duty/DutyList";
+import EditDuty from "./components/duty/EditDuty";
+
 const App = () => {
   return (
     <Router>
@@ -39,6 +45,10 @@ const App = () => {
           <Route path="them-nhan-vien" element={<AddEmployee />} />
           <Route path="chi-tiet-nhan-vien/:id" element={<EmployeeDetail />} />
           <Route path="chinh-sua-nhan-vien/:id" element={<EditEmployee />} />
+          <Route path="danh-sach-phong-ban" element={<DepartmentList />} />
+          <Route path="chinh-sua-phong-ban/:id" element={<EditDepartment />} />
+          <Route path="danh-sach-chuc-vu" element={<DutyList />} />
+          <Route path="chinh-sua-chuc-vu/:id" element={<EditDuty />} />
         </Route>
       </Routes>
     </Router>
