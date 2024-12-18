@@ -1,7 +1,27 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
+import React, { useState, useEffect } from "react"; // Thêm import useState và useEffect
+import { Outlet, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // Component React
+import { faUsers } from "@fortawesome/free-solid-svg-icons"; // Biểu tượng cần dùng
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Lấy thông tin người dùng từ sessionStorage
+    const userInfo = JSON.parse(sessionStorage.getItem("user"));
+    if (userInfo) {
+      setUser(userInfo);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    // Xóa thông tin người dùng khỏi session
+    sessionStorage.removeItem("user");
+
+    // Điều hướng về trang đăng nhập
+    navigate("/dang-nhap"); // Điều hướng về trang login
+  };
   return (
     <div class="wrapper">
       {/* Sidebar  */}
@@ -119,20 +139,30 @@ const Dashboard = () => {
               </li>
               <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarLayouts">
-                  <i class="fas fa-th-list"></i>
-                  <p>Sidebar Layouts</p>
+                  <FontAwesomeIcon icon={faUsers} className="me-2" />
+                  <p>Nhân viên</p>
                   <span class="caret"></span>
                 </a>
                 <div class="collapse" id="sidebarLayouts">
                   <ul class="nav nav-collapse">
                     <li>
-                      <a href="sidebar-style-2.html">
-                        <span class="sub-item">Sidebar Style 2</span>
+                      <a href="/dashboard/danh-sach-phong-ban">
+                        <span class="sub-item">Phòng ban</span>
                       </a>
                     </li>
                     <li>
-                      <a href="icon-menu.html">
-                        <span class="sub-item">Icon Menu</span>
+                      <a href="/dashboard/danh-sach-chuc-vu">
+                        <span class="sub-item">Chức vụ</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/dashboard/danh-sach-nhan-vien">
+                        <span class="sub-item">Nhân Viên</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/dashboard/them-nhan-vien">
+                        <span class="sub-item">Thêm nhân viên</span>
                       </a>
                     </li>
                   </ul>
@@ -597,65 +627,63 @@ const Dashboard = () => {
                   </div>
                 </li>
 
-                <li class="nav-item topbar-user dropdown hidden-caret">
+                <li className="nav-item topbar-user dropdown hidden-caret">
                   <a
-                    class="dropdown-toggle profile-pic"
+                    className="dropdown-toggle profile-pic"
                     data-bs-toggle="dropdown"
                     href="#"
                     aria-expanded="false"
                   >
-                    <div class="avatar-sm">
-                      <img
-                        src="assets/img/profile.jpg"
-                        alt="..."
-                        class="avatar-img rounded-circle"
-                      />
-                    </div>
-                    <span class="profile-username">
-                      <span class="op-7">Hi,</span>
-                      <span class="fw-bold">Hizrian</span>
+                    {/* Avatar */}
+                    {/* <div className="avatar-sm">
+          <img
+            src="assets/img/profile.jpg"
+            alt="..."
+            className="avatar-img rounded-circle"
+          />
+        </div> */}
+                    <span className="profile-username">
+                      {user ? (
+                        <>
+                          <span className="op-7">{user.role}: </span>
+                          <span className="fw-bold">{user.ten}</span>
+                        </>
+                      ) : (
+                        <span className="fw-bold">Guest</span>
+                      )}
                     </span>
                   </a>
-                  <ul class="dropdown-menu dropdown-user animated fadeIn">
-                    <div class="dropdown-user-scroll scrollbar-outer">
+                  <ul className="dropdown-menu dropdown-user animated fadeIn">
+                    <div className="dropdown-user-scroll scrollbar-outer">
                       <li>
-                        <div class="user-box">
-                          <div class="avatar-lg">
-                            <img
-                              src="assets/img/profile.jpg"
-                              alt="image profile"
-                              class="avatar-img rounded"
-                            />
-                          </div>
-                          <div class="u-text">
-                            <h4>Hizrian</h4>
-                            <p class="text-muted">hello@example.com</p>
-                            <a
-                              href="profile.html"
-                              class="btn btn-xs btn-secondary btn-sm"
-                            >
-                              View Profile
-                            </a>
+                        <div className="user-box">
+                          {/* Avatar */}
+                          {/* <div className="avatar-lg">
+                <img
+                  src="assets/img/profile.jpg"
+                  alt="image profile"
+                  className="avatar-img rounded"
+                />
+              </div> */}
+                          <div className="u-text">
+                            {user ? (
+                              <>
+                                <h4>{user.ho} {user.ten}</h4>
+                                <p className="text-muted">{user.email}</p>
+                              </>
+                            ) : (
+                              <h4>Guest</h4>
+                            )}
                           </div>
                         </div>
                       </li>
                       <li>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">
-                          My Profile
-                        </a>
-                        <a class="dropdown-item" href="#">
-                          My Balance
-                        </a>
-                        <a class="dropdown-item" href="#">
-                          Inbox
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">
-                          Account Setting
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">
+                        <div className="dropdown-divider"></div>
+                        <a
+                          className="dropdown-item"
+                          href="#"
+                          onClick={handleLogout}
+                        >
                           Logout
                         </a>
                       </li>
@@ -674,7 +702,6 @@ const Dashboard = () => {
             <Outlet />
           </div>
         </div>
-
 
         <footer class="footer">
           <div class="container-fluid d-flex justify-content-between">
