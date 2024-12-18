@@ -27,10 +27,9 @@ import EditDuty from "./components/duty/EditDuty";
 import UserList from "./components/user/UserList";
 import EditUser from "./components/user/EditUser";
 
-import TinhLuong from "./components/TinhLuong";
-
-
-
+import TinhLuong from "./components/luong/TinhLuong";
+import BangLuong from "./components/luong/BangLuong";
+import BangLuongDetail from "./components/luong/ChiTietBangLuong";
 
 const App = () => {
   return (
@@ -60,7 +59,8 @@ const App = () => {
           <Route path="danh-sach-nguoi-dung" element={<UserList />} />
           <Route path="chinh-sua-nguoi-dung/:id" element={<EditUser />} />
           <Route path="tinh-luong" element={<TinhLuong />} />
-          
+          <Route path="bang-luong" element={<BangLuong />} />
+          <Route path="chi-tiet-bang-luong/:id" element={<BangLuongDetail />} />
         </Route>
       </Routes>
     </Router>

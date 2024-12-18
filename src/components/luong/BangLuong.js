@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { collection, getDocs, doc, deleteDoc, getDoc  } from "firebase/firestore";
-import { db } from "../firebase";
+import {
+  collection,
+  getDocs,
+  doc,
+  deleteDoc,
+  getDoc,
+} from "firebase/firestore";
+import { db } from "../../firebase";
 import { toast } from "react-toastify";
-import { useParams } from "react-router-dom";
-
+import { useParams, useNavigate } from "react-router-dom";
 
 const BangLuong = () => {
+  const navigate = useNavigate(); // Khai báo hook navigate
+
+  // Hàm xử lý khi nhấn nút "Xem Chi Tiết"
+
   const { id } = useParams(); // Lấy ID nhân viên từ URL
   const [employee, setEmployee] = useState(null);
   const [bangLuong, setBangLuong] = useState([]); // Danh sách bảng lương
@@ -23,24 +32,24 @@ const BangLuong = () => {
           stt: index + 1,
           ...doc.data(),
         }));
-  
+
         const updatedData = await Promise.all(
           data.map(async (item) => {
             const nhanVienRef = doc(db, "nhanvien", item.NhanVienID);
             const nhanVienSnap = await getDoc(nhanVienRef);
-  
+
             if (nhanVienSnap.exists()) {
               const nhanVienData = nhanVienSnap.data();
               item.TenNhanVien = nhanVienData.HoTenNV;
               item.ChucVu = nhanVienData.ChucVu;
-  
+
               if (nhanVienData.ChucVu) {
                 const chucVuRef = doc(db, "chucvu", nhanVienData.ChucVu);
                 const chucVuSnap = await getDoc(chucVuRef);
-  
+
                 if (chucVuSnap.exists()) {
                   const chucVuData = chucVuSnap.data();
-                  item.TenChucVu = chucVuData.tenChucVu ;
+                  item.TenChucVu = chucVuData.tenChucVu;
                   item.LuongChucVu = chucVuData.luong;
                 }
               }
@@ -51,17 +60,16 @@ const BangLuong = () => {
             return item;
           })
         );
-        
+
         setBangLuong(updatedData);
         console.error("db:", updatedData);
       } catch (error) {
         console.error("Lỗi khi tải dữ liệu bảng lương:", error);
       }
     };
-  
+
     fetchBangLuong();
   }, []);
-
 
   // Xử lý sắp xếp
   const handleSort = (key) => {
@@ -123,10 +131,15 @@ const BangLuong = () => {
   });
 
   // Tìm kiếm dữ liệu
-  const searchedBangLuong = filteredBangLuong.filter((item) =>
-    item.MaLuong.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.TenNhanVien.toLowerCase().includes(searchTerm.toLowerCase())
+  const searchedBangLuong = filteredBangLuong.filter(
+    (item) =>
+      item.MaLuong.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.TenNhanVien.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // const handleViewDetails = (maLuong) => {
+  //   navigate(`/chi-tiet-bang-luong/${item.id}`); // Điều hướng đến trang chi tiết với mã lương
+  // };
 
   return (
     <div className="container mt-4">
@@ -181,7 +194,9 @@ const BangLuong = () => {
               <td>
                 <button
                   className="btn btn-info me-2"
-                  onClick={() => alert("Xem chi tiết mã lương: " + item.MaLuong)}
+                  onClick={() =>
+                    navigate(`/dashboard/chi-tiet-bang-luong/${item.maLuong}`)
+                  } // Chuyển đến trang chi tiết
                 >
                   Xem Chi Tiết
                 </button>

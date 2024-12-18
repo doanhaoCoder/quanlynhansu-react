@@ -9,7 +9,7 @@ import {
   doc,
   getDoc,
 } from "firebase/firestore";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 
@@ -47,7 +47,7 @@ const TinhLuong = () => {
     fetchNhanVien();
 
     // Lấy thông tin người tạo từ session
-   
+
     // setUsername(userSession);
 
     // Lấy mã lương tiếp theo (tăng dần)
