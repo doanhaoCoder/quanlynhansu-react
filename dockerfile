@@ -4,12 +4,13 @@ FROM ubuntu:20.04
 # Cập nhật và cài đặt curl
 RUN apt-get update && apt-get install -y curl
 
-# Cài đặt Node.js 16.x
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - \
+# Cài đặt Node.js 20
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs
 
-# Cài đặt npm phiên bản 11.0.0
+# Cài đặt npm phiên bản 11
 RUN npm install -g npm@11.0.0
+
 
 # Thiết lập thư mục làm việc trong container
 WORKDIR /app
