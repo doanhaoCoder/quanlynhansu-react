@@ -135,6 +135,16 @@ const TinhLuong = () => {
   };
 
   const handleSubmit = async (e) => {
+    const selectedEmployee = nhanVienList.find(
+      (nv) => nv.id === tinhLuongData.NhanVienID
+    );
+  
+    if (selectedEmployee && selectedEmployee.TinhTrang === "Đã nghỉ việc") {
+      // Hiển thị thông báo lỗi nếu nhân viên đã nghỉ việc
+      alert("Không thể chọn nhân viên đã nghỉ việc!");
+      // toast.error("Không thể chọn nhân viên đã nghỉ việc!");
+      return; // Dừng lại và không tiếp tục lưu
+    }
     e.preventDefault();
 
     // Kiểm tra xem tất cả các trường bắt buộc đã được nhập hay chưa
@@ -212,27 +222,34 @@ const TinhLuong = () => {
 
           {/* Dropdown danh sách nhân viên */}
           <select
-            id="NhanVienID"
-            name="NhanVienID"
-            className="form-control"
-            value={tinhLuongData.NhanVienID}
-            onChange={handleNhanVienChange}
-            required
-          >
-            <option value="">Chọn nhân viên</option>
-            {nhanVienList
-              .filter(
-                (nv) =>
-                  nv.MaNV.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  nv.HoTenNV.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  nv.TinhTrang.toLowerCase().includes(searchTerm.toLowerCase())
-              )
-              .map((nv) => (
-                <option key={nv.id} value={nv.id}>
-                  {nv.MaNV} - {nv.HoTenNV} - ({nv.TinhTrang})
-                </option>
-              ))}
-          </select>
+  id="NhanVienID"
+  name="NhanVienID"
+  className="form-control"
+  value={tinhLuongData.NhanVienID}
+  onChange={handleNhanVienChange}
+  required
+>
+  <option value="">Chọn nhân viên</option>
+  {nhanVienList
+    .filter(
+      (nv) =>
+        nv.MaNV.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        nv.HoTenNV.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        nv.TinhTrang.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .map((nv) => (
+      <option
+        key={nv.id}
+        value={nv.id}
+        style={{
+          color: nv.TinhTrang === "Đã nghỉ việc" ? "red" : "black", // Màu đỏ nếu nghỉ việc
+        }}
+      >
+        {nv.MaNV} - {nv.HoTenNV} - ({nv.TinhTrang})
+      </option>
+    ))}
+</select>
+
         </div>
 
         <div className="form-group">
@@ -257,6 +274,8 @@ const TinhLuong = () => {
             value={tinhLuongData.GhiChu}
             onChange={handleChange}
             rows="3"
+            required
+
           />
         </div>
 
