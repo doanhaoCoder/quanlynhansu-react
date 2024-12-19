@@ -107,10 +107,10 @@ const Register = () => {
             className="mb-4 opacity-70"
             style={{ color: "hsl(218, 81%, 85%)" }}
           >
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+            {/* Lorem ipsum dolor, sit amet consectetur adipisicing elit.
             Temporibus, expedita iusto veniam atque, magni tempora mollitia
             dolorum consequatur nulla, neque debitis eos reprehenderit quasi ab
-            ipsum nisi dolorem modi. Quos?
+            ipsum nisi dolorem modi. Quos? */}
           </p>
         </div>
 
@@ -267,7 +267,7 @@ const Register = () => {
                 </div>
 
                 {/* Subscribe checkbox */}
-                <div className="form-check d-flex justify-content-center mb-4">
+                {/* <div className="form-check d-flex justify-content-center mb-4">
                   <input
                     className="form-check-input me-2"
                     type="checkbox"
@@ -278,7 +278,7 @@ const Register = () => {
                   <label className="form-check-label" htmlFor="form2Example33">
                     Subscribe to our newsletter
                   </label>
-                </div>
+                </div> */}
 
                 {/* Submit button */}
                 <button
@@ -292,7 +292,9 @@ const Register = () => {
 
                 {/* Social login buttons */}
                 <div className="text-center">
-                  <p>or sign up with:</p>
+                <p><a href="/dang-nhap" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Đăng nhập</a></p>
+
+                  {/* <p>or sign up with:</p>
                   <button
                     type="button"
                     className="btn btn-link btn-floating mx-1"
@@ -319,7 +321,7 @@ const Register = () => {
                     className="btn btn-link btn-floating mx-1"
                   >
                     <i className="fab fa-github"></i>
-                  </button>
+                  </button> */}
                 </div>
               </form>
             </div>

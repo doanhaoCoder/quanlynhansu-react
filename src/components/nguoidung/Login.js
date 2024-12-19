@@ -41,7 +41,7 @@ const Login = () => {
       if (user) {
         // Lưu thông tin vào SessionStorage
         sessionStorage.setItem("user", JSON.stringify(user));
-        alert("Đăng nhập thành công!");
+        // alert("Đăng nhập thành công!");
         navigate("/dashboard"); // Chuyển hướng đến trang dashboard
       } else {
         alert("Tên đăng nhập hoặc mật khẩu không đúng!");
@@ -109,6 +109,7 @@ const Login = () => {
                 >
                   Log In
                 </button>
+                <p><a href="/dang-ky" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Đăng ký ngay</a></p>
               </form>
             </div>
           </div>

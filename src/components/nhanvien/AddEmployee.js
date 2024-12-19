@@ -2,8 +2,12 @@ import React, { useState, useEffect } from "react";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 import { toast } from "react-toastify"; // Import react-toastify
+import { useParams, useNavigate } from "react-router-dom";
+
 
 const AddEmployee = () => {
+  const navigate = useNavigate(); // Khai báo hook navigate
+
   const [employee, setEmployee] = useState({
     MaNV: "",
     HoTenNV: "",
@@ -15,6 +19,7 @@ const AddEmployee = () => {
     GhiChu: "",
     ChucVu: "",    // Chức vụ
     PhongBan: "",  // Phòng ban
+    TinhTrang: "Đang làm việc"
   });
 
   const [error, setError] = useState("");
@@ -154,6 +159,12 @@ const AddEmployee = () => {
 
   return (
     <div className="container mt-5">
+      <button
+        className="btn btn-primary mb-2"
+        onClick={() => navigate(-1)} // Quay lại trang trước đó
+      >
+        Trở lại
+      </button>
       <h2>Thêm Nhân Viên</h2>
       {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleSubmit}>

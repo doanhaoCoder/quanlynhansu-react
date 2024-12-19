@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
-import {FaEye, FaEdit, FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
+import { FaEye, FaSort, FaTrashAlt } from "react-icons/fa";
 
 const BangLuong = () => {
   const navigate = useNavigate(); // Khai báo hook navigate
@@ -71,6 +71,20 @@ const BangLuong = () => {
 
     fetchBangLuong();
   }, []);
+
+  // Hàm xóa nhân viên
+  // const handleDelete = async (id) => {
+  //   if (window.confirm("Bạn có chắc chắn muốn xóa nhân viên này?")) {
+  //     try {
+  //       await deleteDoc(doc(db, "nhanvien", id));
+  //       setEmployees(employees.filter((employee) => employee.id !== id));
+  //       toast.success("Xóa nhân viên thành công!");
+  //     } catch (error) {
+  //       console.error("Error deleting employee: ", error);
+  //       toast.error("Không thể xóa nhân viên.");
+  //     }
+  //   }
+  // };
 
   // Xử lý sắp xếp
   const handleSort = (key) => {
@@ -198,7 +212,7 @@ const BangLuong = () => {
               <td>{item.TenNhanVien}</td>
               <td>{item.TenChucVu}</td>
               <td>{item.SoNgayCong}</td>
-              <td>{item.TongLuong.toLocaleString()} đ</td>
+              <td>{item.TongLuong.toLocaleString()} VNĐ</td>
               <td>{new Date(item.NgayTinhLuong).toLocaleDateString()}</td>
               <td>
                 <button
@@ -213,7 +227,7 @@ const BangLuong = () => {
                   className="btn btn-danger"
                   onClick={() => handleDelete(item.id)}
                 >
-                  <FaEdit />
+                  <FaTrashAlt />
                 </button>
               </td>
             </tr>

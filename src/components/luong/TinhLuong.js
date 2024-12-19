@@ -14,6 +14,8 @@ import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 
 const TinhLuong = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+
   const sessionUser = JSON.parse(sessionStorage.getItem("user"));
   const { id } = useParams(); // Lấy ID nhân viên từ URL
   const [employee, setEmployee] = useState(null);
@@ -119,9 +121,16 @@ const TinhLuong = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+  
+    // Chỉ xử lý nếu giá trị nhập vào là hợp lệ (không phải ký tự không phải số)
+    const formattedValue = value.replace(/\D/g, ''); // Loại bỏ tất cả ký tự không phải số
+  
+    // Kiểm tra nếu là các trường cần chuyển thành số (Thuong, PhuCap)
+    const newValue = (name === "Thuong" || name === "PhuCap") ? Number(formattedValue) : value;
+  
     setTinhLuongData({
       ...tinhLuongData,
-      [name]: value,
+      [name]: newValue,
     });
   };
 
@@ -174,7 +183,7 @@ const TinhLuong = () => {
   };
 
   return (
-    <div className="tinh-luong">
+    <div className="container tinh-luong">
       <h2>Tính Lương</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
@@ -191,6 +200,17 @@ const TinhLuong = () => {
 
         <div className="form-group">
           <label htmlFor="NhanVienID">Chọn Nhân Viên</label>
+
+          {/* Ô tìm kiếm */}
+          <input
+            type="text"
+            className="form-control mb-2"
+            placeholder="Tìm nhân viên..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+
+          {/* Dropdown danh sách nhân viên */}
           <select
             id="NhanVienID"
             name="NhanVienID"
@@ -200,11 +220,18 @@ const TinhLuong = () => {
             required
           >
             <option value="">Chọn nhân viên</option>
-            {nhanVienList.map((nv) => (
-              <option key={nv.id} value={nv.id}>
-                {nv.HoTenNV} - {nv.MaNV}
-              </option>
-            ))}
+            {nhanVienList
+              .filter(
+                (nv) =>
+                  nv.MaNV.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  nv.HoTenNV.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  nv.TinhTrang.toLowerCase().includes(searchTerm.toLowerCase())
+              )
+              .map((nv) => (
+                <option key={nv.id} value={nv.id}>
+                  {nv.MaNV} - {nv.HoTenNV} - ({nv.TinhTrang})
+                </option>
+              ))}
           </select>
         </div>
 
@@ -234,28 +261,45 @@ const TinhLuong = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="PhuCap">Phụ Cấp</label>
-          <input
-            type="number"
-            id="PhuCap"
-            name="PhuCap"
-            className="form-control"
-            value={tinhLuongData.PhuCap}
-            onChange={handleChange}
-          />
-        </div>
+  <label htmlFor="PhuCap">Phụ Cấp</label>
+  <input
+    type="text"
+    id="PhuCap"
+    name="PhuCap"
+    className="form-control"
+    value={new Intl.NumberFormat().format(tinhLuongData.PhuCap)} // Định dạng số với dấu phân cách
+    onChange={handleChange}
+    onBlur={(e) => {
+      // Khi người dùng rời khỏi ô input, chuyển lại thành số để gửi vào Firebase
+      const formattedValue = e.target.value.replace(/\D/g, '');
+      setTinhLuongData({
+        ...tinhLuongData,
+        PhuCap: Number(formattedValue),
+      });
+    }}
+  />
+</div>
 
-        <div className="form-group">
-          <label htmlFor="Thuong">Tiền Thưởng</label>
-          <input
-            type="number"
-            id="Thuong"
-            name="Thuong"
-            className="form-control"
-            value={tinhLuongData.Thuong}
-            onChange={handleChange}
-          />
-        </div>
+<div className="form-group">
+  <label htmlFor="Thuong">Thưởng</label>
+  <input
+    type="text"
+    id="Thuong"
+    name="Thuong"
+    className="form-control"
+    value={new Intl.NumberFormat().format(tinhLuongData.Thuong)} // Định dạng số với dấu phân cách
+    onChange={handleChange}
+    onBlur={(e) => {
+      // Khi người dùng rời khỏi ô input, chuyển lại thành số để gửi vào Firebase
+      const formattedValue = e.target.value.replace(/\D/g, '');
+      setTinhLuongData({
+        ...tinhLuongData,
+        Thuong: Number(formattedValue),
+      });
+    }}
+  />
+</div>
+
 
         <div className="form-group">
           <label htmlFor="NgayTinhLuong">Ngày Tính Lương</label>
