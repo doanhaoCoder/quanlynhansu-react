@@ -4,8 +4,8 @@ services:
   react-app:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: react-app-container
+      dockerfile: dockerfile
+    container_name: react-app
     ports:
       - "3000:3000"
     volumes:
@@ -16,3 +16,5 @@ services:
       - NODE_ENV=development
     stdin_open: true
     tty: true
+
+# không sử dụng được
