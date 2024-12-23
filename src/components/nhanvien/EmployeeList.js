@@ -171,7 +171,7 @@ const EmployeeList = () => {
                 </td>
                 <td>
                   <button
-                    className="btn btn-primary btn-sm me-2"
+                    className="btn btn-primary btn-sm me-2 mt-2"
                     onClick={() =>
                       navigate(`/dashboard/chi-tiet-nhan-vien/${employee.id}`)
                     }
@@ -179,7 +179,7 @@ const EmployeeList = () => {
                     <FaEye /> Xem
                   </button>
                   <button
-                    className="btn btn-warning btn-sm me-2"
+                    className="btn btn-warning btn-sm me-2 mt-2"
                     onClick={() =>
                       navigate(`/dashboard/chinh-sua-nhan-vien/${employee.id}`)
                     }
@@ -187,7 +187,7 @@ const EmployeeList = () => {
                     <FaEdit /> Sửa
                   </button>
                   <button
-                    className="btn btn-danger btn-sm"
+                    className="btn btn-danger btn-sm mt-2"
                     onClick={() => handleDelete(employee.id)}
                   >
                     <FaTrashAlt /> Xóa

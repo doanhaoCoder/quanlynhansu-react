@@ -20,9 +20,11 @@ import { PrivateRoute, AdminRoute } from "./components/PrivateRoute";
 
 import DepartmentList from "./components/phongban/DepartmentList";
 import EditDepartment from "./components/phongban/EditDepartment";
+import DepartmentView from "./components/phongban/DepartmentView";
 
 import DutyList from "./components/chucvu/DutyList";
 import EditDuty from "./components/chucvu/EditDuty";
+import DutyView from "./components/chucvu/DutyView";
 
 import UserList from "./components/nguoidung/UserList";
 import EditUser from "./components/nguoidung/EditUser";
@@ -54,8 +56,10 @@ const App = () => {
           <Route path="chinh-sua-nhan-vien/:id" element={<EditEmployee />} />
           <Route path="danh-sach-phong-ban" element={<DepartmentList />} />
           <Route path="chinh-sua-phong-ban/:id" element={<EditDepartment />} />
+          <Route path="xem-phong-ban/:id" element={<DepartmentView />} />
           <Route path="danh-sach-chuc-vu" element={<DutyList />} />
           <Route path="chinh-sua-chuc-vu/:id" element={<EditDuty />} />
+          <Route path="xem-chuc-vu/:id" element={<DutyView />} />
           <Route
             path="danh-sach-nguoi-dung"
             element={

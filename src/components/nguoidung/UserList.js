@@ -249,13 +249,13 @@ const UserList = () => {
                 <td>{user.trangThai}</td>
                 <td>
                   <button
-                    className="btn btn-warning btn-sm me-2"
+                    className="btn btn-warning btn-sm me-2 mt-2"
                     onClick={() => navigate(`/dashboard/chinh-sua-nguoi-dung/${user.id}`)}
                   >
                     <FaEdit /> Sửa
                   </button>
                   <button
-                    className="btn btn-danger btn-sm"
+                    className="btn btn-danger btn-sm mt-2"
                     onClick={() => handleDelete(user.id)}
                   >
                     <FaTrashAlt /> Xóa

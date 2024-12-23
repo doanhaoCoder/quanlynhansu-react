@@ -221,7 +221,7 @@ const BangLuong = () => {
               <td>{new Date(item.NgayTinhLuong).toLocaleDateString()}</td>
               <td>
                 <button
-                  className="btn btn-info me-2"
+                  className="btn btn-info me-2 mt-2"
                   onClick={() =>
                     navigate(`/dashboard/chi-tiet-bang-luong/${item.id}`)
                   }
@@ -229,7 +229,7 @@ const BangLuong = () => {
                   <FaEye />
                 </button>
                 <button
-                  className="btn btn-danger"
+                  className="btn btn-danger mt-2"
                   onClick={() => handleDelete(item.id)}
                 >
                   <FaTrashAlt />

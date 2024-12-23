@@ -5,11 +5,13 @@ import {
   addDoc,
   deleteDoc,
   doc,
+  query,
+  where,
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
-import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import { FaEdit, FaTrashAlt, FaEye } from "react-icons/fa";
 
 const DepartmentList = () => {
   const [departments, setDepartments] = useState([]);
@@ -33,7 +35,18 @@ const DepartmentList = () => {
         querySnapshot.forEach((doc) => {
           departmentData.push({ ...doc.data(), id: doc.id });
         });
-        setDepartments(departmentData);
+
+        // Fetch the number of members for each department
+        const updatedDepartmentData = await Promise.all(
+          departmentData.map(async (dept) => {
+            const q = query(collection(db, "nhanvien"), where("PhongBan", "==", dept.id));
+            const querySnapshot = await getDocs(q);
+            dept.memberCount = querySnapshot.size;
+            return dept;
+          })
+        );
+
+        setDepartments(updatedDepartmentData);
       } catch (error) {
         console.error("Error fetching departments: ", error);
         toast.error("Không thể tải danh sách phòng ban.");
@@ -84,6 +97,7 @@ const DepartmentList = () => {
           ngayTao: new Date().toISOString(),
           lastModified: null,
           modifiedBy: null,
+          memberCount: 0, // New department initially has 0 members
         },
       ]);
     } catch (error) {
@@ -167,6 +181,7 @@ const DepartmentList = () => {
               <th>Ngày Tạo</th>
               <th>Người Chỉnh Sửa</th>
               <th>Ngày Chỉnh Sửa</th>
+              <th>Số Lượng Thành Viên</th>
               <th>Hành Động</th>
             </tr>
           </thead>
@@ -189,9 +204,18 @@ const DepartmentList = () => {
                     ? new Date(dept.lastModified).toLocaleDateString()
                     : "Chưa chỉnh sửa"}
                 </td>
+                <td>{dept.memberCount}</td>
                 <td>
                   <button
-                    className="btn btn-warning btn-sm me-2"
+                    className="btn btn-info btn-sm me-2 mt-2"
+                    onClick={() =>
+                      navigate(`/dashboard/xem-phong-ban/${dept.id}`)
+                    }
+                  >
+                    <FaEye /> Xem nhân viên
+                  </button>
+                  <button
+                    className="btn btn-warning btn-sm me-2 mt-2"
                     onClick={() =>
                       navigate(`/dashboard/chinh-sua-phong-ban/${dept.id}`)
                     }
@@ -199,7 +223,7 @@ const DepartmentList = () => {
                     <FaEdit /> Sửa
                   </button>
                   <button
-                    className="btn btn-danger btn-sm"
+                    className="btn btn-danger btn-sm mt-2"
                     onClick={() => handleDelete(dept.id)}
                   >
                     <FaTrashAlt /> Xóa

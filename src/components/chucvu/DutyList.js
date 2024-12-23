@@ -5,19 +5,21 @@ import {
   addDoc,
   deleteDoc,
   doc,
+  query,
+  where,
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
-import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import { FaEdit, FaTrashAlt, FaEye } from "react-icons/fa";
 
-const PositionList = () => {
-  const [positions, setPositions] = useState([]);
+const DutyList = () => {
+  const [duties, setDuties] = useState([]);
   const [formData, setFormData] = useState({
     maChucVu: "",
     tenChucVu: "",
     moTa: "",
-    luong: "", // Thêm trường lương
+    luong: "",
   });
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -25,25 +27,36 @@ const PositionList = () => {
   const sessionUser = JSON.parse(sessionStorage.getItem("user"));
 
   useEffect(() => {
-    const fetchPositions = async () => {
+    const fetchDuties = async () => {
       setLoading(true);
       try {
-        const positionRef = collection(db, "chucvu");
-        const querySnapshot = await getDocs(positionRef);
-        const positionData = [];
+        const dutyRef = collection(db, "chucvu");
+        const querySnapshot = await getDocs(dutyRef);
+        const dutyData = [];
         querySnapshot.forEach((doc) => {
-          positionData.push({ ...doc.data(), id: doc.id });
+          dutyData.push({ ...doc.data(), id: doc.id });
         });
-        setPositions(positionData);
+
+        // Fetch the number of members for each duty
+        const updatedDutyData = await Promise.all(
+          dutyData.map(async (duty) => {
+            const q = query(collection(db, "nhanvien"), where("ChucVu", "==", duty.id));
+            const querySnapshot = await getDocs(q);
+            duty.memberCount = querySnapshot.size;
+            return duty;
+          })
+        );
+
+        setDuties(updatedDutyData);
       } catch (error) {
-        console.error("Error fetching positions: ", error);
+        console.error("Error fetching duties: ", error);
         toast.error("Không thể tải danh sách chức vụ.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPositions();
+    fetchDuties();
   }, []);
 
   const handleChange = (e) => {
@@ -63,19 +76,12 @@ const PositionList = () => {
       return;
     }
 
-    // Kiểm tra mã chức vụ có trùng không
-    const isDuplicate = positions.some((pos) => pos.maChucVu === maChucVu);
-    if (isDuplicate) {
-      toast.error("Mã chức vụ đã tồn tại. Vui lòng nhập mã khác.");
-      return;
-    }
-
     try {
       await addDoc(collection(db, "chucvu"), {
         maChucVu,
         tenChucVu,
         moTa,
-        luong: parseFloat(luong), // Chuyển lương thành số
+        luong: parseFloat(luong),
         nguoiTao: sessionUser?.username,
         ngayTao: new Date().toISOString(),
         lastModified: null,
@@ -83,7 +89,7 @@ const PositionList = () => {
       });
       setFormData({ maChucVu: "", tenChucVu: "", moTa: "", luong: "" });
       toast.success("Thêm chức vụ thành công!");
-      setPositions((prev) => [
+      setDuties((prev) => [
         ...prev,
         {
           maChucVu,
@@ -94,10 +100,11 @@ const PositionList = () => {
           ngayTao: new Date().toISOString(),
           lastModified: null,
           modifiedBy: null,
+          memberCount: 0, // New duty initially has 0 members
         },
       ]);
     } catch (error) {
-      console.error("Error adding position: ", error);
+      console.error("Error adding duty: ", error);
       toast.error("Không thể thêm chức vụ.");
     }
   };
@@ -106,10 +113,10 @@ const PositionList = () => {
     if (window.confirm("Bạn có chắc chắn muốn xóa chức vụ này?")) {
       try {
         await deleteDoc(doc(db, "chucvu", id));
-        setPositions(positions.filter((pos) => pos.id !== id));
+        setDuties(duties.filter((duty) => duty.id !== id));
         toast.success("Xóa chức vụ thành công!");
       } catch (error) {
-        console.error("Error deleting position: ", error);
+        console.error("Error deleting duty: ", error);
         toast.error("Không thể xóa chức vụ.");
       }
     }
@@ -144,7 +151,25 @@ const PositionList = () => {
               required
             />
           </div>
-          <div className="col-md-4">
+          <div className="col-md-3">
+            <input
+              type="number"
+              className="form-control"
+              name="luong"
+              placeholder="Lương ngày (VNĐ)"
+              value={formData.luong}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="col-md-3">
+            <button type="submit" className="btn btn-primary w-100">
+              Thêm Chức Vụ
+            </button>
+          </div>
+        </div>
+        <div className="row g-3 mt-3">
+          <div className="col-md-12">
             <input
               type="text"
               className="form-control"
@@ -153,22 +178,6 @@ const PositionList = () => {
               value={formData.moTa}
               onChange={handleChange}
             />
-          </div>
-          <div className="col-md-2">
-            <input
-              type="number"
-              className="form-control"
-              name="luong"
-              placeholder="Lương (VNĐ)"
-              value={formData.luong}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="col-md-2">
-            <button type="submit" className="btn btn-primary w-100">
-              Thêm Chức Vụ
-            </button>
           </div>
         </div>
       </form>
@@ -184,46 +193,56 @@ const PositionList = () => {
               <th>Mã Chức Vụ</th>
               <th>Tên Chức Vụ</th>
               <th>Mô Tả</th>
-              <th>Lương Ngày (VNĐ)</th>
+              <th>Lương Ngày</th>
               <th>Người Tạo</th>
               <th>Ngày Tạo</th>
               <th>Người Chỉnh Sửa</th>
               <th>Ngày Chỉnh Sửa</th>
+              <th>Số Lượng Thành Viên</th>
               <th>Hành Động</th>
             </tr>
           </thead>
           <tbody>
-            {positions.map((pos, index) => (
-              <tr key={pos.id}>
+            {duties.map((duty, index) => (
+              <tr key={duty.id}>
                 <td>{index + 1}</td>
-                <td>{pos.maChucVu}</td>
-                <td>{pos.tenChucVu}</td>
+                <td>{duty.maChucVu}</td>
+                <td>{duty.tenChucVu}</td>
                 <td>
-                  {pos.moTa?.length > 50
-                    ? `${pos.moTa.substring(0, 50)}...`
-                    : pos.moTa}
+                  {duty.moTa?.length > 50
+                    ? `${duty.moTa.substring(0, 50)}...`
+                    : duty.moTa}
                 </td>
-                <td>{pos.luong ? pos.luong.toLocaleString() : "Chưa có"} VNĐ</td>
-                <td>{pos.nguoiTao}</td>
-                <td>{new Date(pos.ngayTao).toLocaleDateString()}</td>
-                <td>{pos.modifiedBy || "Chưa chỉnh sửa"}</td>
+                <td>{duty.luong.toLocaleString()} VNĐ</td>
+                <td>{duty.nguoiTao}</td>
+                <td>{new Date(duty.ngayTao).toLocaleDateString()}</td>
+                <td>{duty.modifiedBy || "Chưa chỉnh sửa"}</td>
                 <td>
-                  {pos.lastModified
-                    ? new Date(pos.lastModified).toLocaleDateString()
+                  {duty.lastModified
+                    ? new Date(duty.lastModified).toLocaleDateString()
                     : "Chưa chỉnh sửa"}
                 </td>
+                <td>{duty.memberCount}</td>
                 <td>
                   <button
-                    className="btn btn-warning btn-sm me-2"
+                    className="btn btn-info btn-sm me-2 mt-2"
                     onClick={() =>
-                      navigate(`/dashboard/chinh-sua-chuc-vu/${pos.id}`)
+                      navigate(`/dashboard/xem-chuc-vu/${duty.id}`)
+                    }
+                  >
+                    <FaEye /> Xem nhân viên
+                  </button>
+                  <button
+                    className="btn btn-warning btn-sm me-2 mt-2"
+                    onClick={() =>
+                      navigate(`/dashboard/chinh-sua-chuc-vu/${duty.id}`)
                     }
                   >
                     <FaEdit /> Sửa
                   </button>
                   <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() => handleDelete(pos.id)}
+                    className="btn btn-danger btn-sm mt-2"
+                    onClick={() => handleDelete(duty.id)}
                   >
                     <FaTrashAlt /> Xóa
                   </button>
@@ -237,4 +256,4 @@ const PositionList = () => {
   );
 };
 
-export default PositionList;
+export default DutyList;
