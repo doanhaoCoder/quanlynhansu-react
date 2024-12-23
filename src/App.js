@@ -16,7 +16,7 @@ import EditEmployee from "./components/nhanvien/EditEmployee";
 
 import Register from "./components/nguoidung/Register";
 import Login from "./components/nguoidung/Login";
-import PrivateRoute from "./components/PrivateRoute";
+import { PrivateRoute, AdminRoute } from "./components/PrivateRoute";
 
 import DepartmentList from "./components/phongban/DepartmentList";
 import EditDepartment from "./components/phongban/EditDepartment";
@@ -56,8 +56,22 @@ const App = () => {
           <Route path="chinh-sua-phong-ban/:id" element={<EditDepartment />} />
           <Route path="danh-sach-chuc-vu" element={<DutyList />} />
           <Route path="chinh-sua-chuc-vu/:id" element={<EditDuty />} />
-          <Route path="danh-sach-nguoi-dung" element={<UserList />} />
-          <Route path="chinh-sua-nguoi-dung/:id" element={<EditUser />} />
+          <Route
+            path="danh-sach-nguoi-dung"
+            element={
+              <AdminRoute>
+                <UserList />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="chinh-sua-nguoi-dung/:id"
+            element={
+              <AdminRoute>
+                <EditUser />
+              </AdminRoute>
+            }
+          />
           <Route path="tinh-luong" element={<TinhLuong />} />
           <Route path="bang-luong" element={<BangLuong />} />
           <Route path="chi-tiet-bang-luong/:id" element={<BangLuongDetail />} />

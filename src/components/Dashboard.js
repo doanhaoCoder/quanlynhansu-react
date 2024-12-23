@@ -126,22 +126,24 @@ const Dashboard = () => {
                   </ul>
                 </div>
               </li>
-              <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#forms">
-                  <FontAwesomeIcon icon={faUser} /> 
-                  <p> Người dùng</p>
-                  <span class="caret"></span>
-                </a>
-                <div class="collapse" id="forms">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="/dashboard/danh-sach-nguoi-dung">
-                        <span class="sub-item">Người dùng</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
+              {user && user.role === "Quản trị viên" && (
+                <li class="nav-item">
+                  <a data-bs-toggle="collapse" href="#forms">
+                    <FontAwesomeIcon icon={faUser} />
+                    <p> Người dùng</p>
+                    <span class="caret"></span>
+                  </a>
+                  <div class="collapse" id="forms">
+                    <ul class="nav nav-collapse">
+                      <li>
+                        <a href="/dashboard/danh-sach-nguoi-dung">
+                          <span class="sub-item">Người dùng</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </li>
+              )}
             </ul>
           </div>
         </div>
