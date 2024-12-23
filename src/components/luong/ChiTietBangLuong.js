@@ -27,6 +27,8 @@ const EmployeeDetail = () => {
               employeeData.tenChucVu = chucVuData.tenChucVu; // Kiểm tra tên trường tại đây
               employeeData.tenNV = chucVuData.HoTenNV; // Kiểm tra tên trường tại đây
               employeeData.maNV = chucVuData.MaNV; // Kiểm tra tên trường tại đây
+              employeeData.tenPhong = chucVuData.tenPhong; // Kiểm tra tên trường tại đây
+
             }
           }
 
@@ -92,6 +94,9 @@ const EmployeeDetail = () => {
             </p>
             <p>
               <strong>Chức Vụ:</strong> {bangLuong.tenChucVu}
+            </p>
+            <p>
+              <strong>Phòng ban:</strong> {bangLuong.tenPhong}
             </p>
             <p>
               <strong>Lương Ngày:</strong>{" "}
