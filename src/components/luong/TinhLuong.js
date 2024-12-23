@@ -24,7 +24,9 @@ const TinhLuong = () => {
     MaLuong: "",
     NhanVienID: "",
     SoNgayCong: 0,
-    GhiChu: "",
+    GhiChuNghi: "", // Changed from GhiChu
+    GhiChuPhuCap: "", // New field for allowance note
+    GhiChuThuong: "", // New field for bonus note
     PhuCap: 0,
     Thuong: 0,
     NgayTinhLuong: "",
@@ -152,7 +154,9 @@ const TinhLuong = () => {
       !tinhLuongData.NhanVienID ||
       !tinhLuongData.SoNgayCong ||
       !tinhLuongData.NgayTinhLuong ||
-      !tinhLuongData.GhiChu
+      !tinhLuongData.GhiChuNghi || // Changed from GhiChu
+      (tinhLuongData.PhuCap > 0 && !tinhLuongData.GhiChuPhuCap) || // Check if allowance note is required
+      (tinhLuongData.Thuong > 0 && !tinhLuongData.GhiChuThuong) // Check if bonus note is required
     ) {
       setError("Vui lòng nhập đủ các trường bắt buộc!");
       return;
@@ -179,7 +183,9 @@ const TinhLuong = () => {
         MaLuong: "",
         NhanVienID: "",
         SoNgayCong: 0,
-        GhiChu: "",
+        GhiChuNghi: "", // Changed from GhiChu
+        GhiChuPhuCap: "", // New field for allowance note
+        GhiChuThuong: "", // New field for bonus note
         PhuCap: 0,
         Thuong: 0,
         NgayTinhLuong: "",
@@ -209,7 +215,7 @@ const TinhLuong = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="NhanVienID">Chọn Nhân Viên</label>
+          <label htmlFor="NhanVienID">Chọn Nhân Viên (Tìm kiếm mã nhân viên hoặc tên)</label>
 
           {/* Ô tìm kiếm */}
           <input
@@ -265,6 +271,19 @@ const TinhLuong = () => {
           />
         </div>
 
+      <div className="form-group">
+        <label htmlFor="GhiChuNghi">Ghi Chú (Ngày nghỉ, lý do nghỉ)</label> {/* Changed from GhiChu */}
+        <textarea
+          id="GhiChuNghi"
+          name="GhiChuNghi"
+          className="form-control"
+          value={tinhLuongData.GhiChuNghi} // Changed from GhiChu
+          onChange={handleChange}
+          rows="3"
+          required
+  
+        />
+      </div>
 
         <div className="form-group">
   <label htmlFor="PhuCap">Phụ Cấp</label>
@@ -286,6 +305,21 @@ const TinhLuong = () => {
   />
 </div>
 
+{tinhLuongData.PhuCap > 0 && (
+  <div className="form-group">
+    <label htmlFor="GhiChuPhuCap">Ghi Chú Phụ Cấp</label> {/* New field for allowance note */}
+    <textarea
+      type="text"
+      id="GhiChuPhuCap"
+      name="GhiChuPhuCap"
+      className="form-control"
+      value={tinhLuongData.GhiChuPhuCap} // New field for allowance note
+      onChange={handleChange}
+      required
+    />
+  </div>
+)}
+
 <div className="form-group">
   <label htmlFor="Thuong">Thưởng</label>
   <input
@@ -306,19 +340,20 @@ const TinhLuong = () => {
   />
 </div>
 
-      <div className="form-group">
-        <label htmlFor="GhiChu">Ghi Chú (Ngày nghỉ, lý do nghỉ, phụ cấp, thưởng)</label>
-        <textarea
-          id="GhiChu"
-          name="GhiChu"
-          className="form-control"
-          value={tinhLuongData.GhiChu}
-          onChange={handleChange}
-          rows="3"
-          required
-
-        />
-      </div>
+{tinhLuongData.Thuong > 0 && (
+  <div className="form-group">
+    <label htmlFor="GhiChuThuong">Ghi Chú Thưởng</label> {/* New field for bonus note */}
+    <textarea
+      type="text"
+      id="GhiChuThuong"
+      name="GhiChuThuong"
+      className="form-control"
+      value={tinhLuongData.GhiChuThuong} // New field for bonus note
+      onChange={handleChange}
+      required
+    />
+  </div>
+)}
 
         <div className="form-group">
           <label htmlFor="NgayTinhLuong">Ngày Tính Lương</label>
