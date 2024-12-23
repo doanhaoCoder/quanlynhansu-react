@@ -129,6 +129,11 @@ const Dashboard = () => {
                         <span class="sub-item">Lương thưởng</span>
                       </a>
                     </li>
+                    <li>
+                      <a href="/dashboard/ky-luat">
+                        <span class="sub-item">Kỷ luật</span>
+                      </a>
+                    </li>
                   </ul>
                 </div>
               </li>

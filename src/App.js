@@ -13,6 +13,9 @@ import EmployeeList from "./components/nhanvien/EmployeeList";
 import AddEmployee from "./components/nhanvien/AddEmployee";
 import EmployeeDetail from "./components/nhanvien/EmployeeDetail";
 import EditEmployee from "./components/nhanvien/EditEmployee";
+import Discipline from "./components/kyluat/Discipline";
+import EditDiscipline from "./components/kyluat/EditDiscipline";
+import ChiTietKyLuat from "./components/kyluat/ChiTietKyLuat";
 
 import Register from "./components/nguoidung/Register";
 import Login from "./components/nguoidung/Login";
@@ -83,6 +86,9 @@ const App = () => {
           <Route path="chi-tiet-bang-luong/:id" element={<BangLuongDetail />} />
           <Route path="luong-thuong" element={<LuongThuong />} />
           <Route path="phu-cap" element={<PhuCap />} />
+          <Route path="ky-luat" element={<Discipline />} />
+          <Route path="sua-ky-luat/:id" element={<EditDiscipline />} />
+          <Route path="chi-tiet-ky-luat/:id" element={<ChiTietKyLuat />} />
         </Route>
       </Routes>
     </Router>
