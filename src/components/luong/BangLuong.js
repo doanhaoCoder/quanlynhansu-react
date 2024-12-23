@@ -12,6 +12,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { FaEye, FaSort, FaTrashAlt } from "react-icons/fa";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const BangLuong = () => {
   const navigate = useNavigate(); // Khai báo hook navigate
@@ -21,6 +23,7 @@ const BangLuong = () => {
   const [bangLuong, setBangLuong] = useState([]); // Danh sách bảng lương
   const [searchTerm, setSearchTerm] = useState(""); // Tìm kiếm
   const [filter, setFilter] = useState("all"); // Bộ lọc theo tháng, quý, năm
+  const [filterDate, setFilterDate] = useState(new Date()); // Ngày lọc
   const [sortConfig, setSortConfig] = useState(null); // Cấu hình sắp xếp
 
   // Lấy dữ liệu bảng lương từ Firestore
@@ -72,20 +75,6 @@ const BangLuong = () => {
     fetchBangLuong();
   }, []);
 
-  // Hàm xóa nhân viên
-  // const handleDelete = async (id) => {
-  //   if (window.confirm("Bạn có chắc chắn muốn xóa nhân viên này?")) {
-  //     try {
-  //       await deleteDoc(doc(db, "nhanvien", id));
-  //       setEmployees(employees.filter((employee) => employee.id !== id));
-  //       toast.success("Xóa nhân viên thành công!");
-  //     } catch (error) {
-  //       console.error("Error deleting employee: ", error);
-  //       toast.error("Không thể xóa nhân viên.");
-  //     }
-  //   }
-  // };
-
   // Xử lý sắp xếp
   const handleSort = (key) => {
     let direction = "ascending";
@@ -135,24 +124,24 @@ const BangLuong = () => {
 
   // Lọc dữ liệu theo tháng, quý, năm
   const filteredBangLuong = bangLuong.filter((item) => {
-    if (filter === "all") return true;
     const ngayTinhLuong = new Date(item.NgayTinhLuong);
-    const currentDate = new Date();
+
+    if (filter === "all") return true;
 
     if (filter === "month") {
       return (
-        ngayTinhLuong.getMonth() === currentDate.getMonth() &&
-        ngayTinhLuong.getFullYear() === currentDate.getFullYear()
+        ngayTinhLuong.getMonth() === filterDate.getMonth() &&
+        ngayTinhLuong.getFullYear() === filterDate.getFullYear()
       );
     } else if (filter === "quarter") {
-      const currentQuarter = Math.floor(currentDate.getMonth() / 3);
+      const selectedQuarter = Math.floor(filterDate.getMonth() / 3);
       const recordQuarter = Math.floor(ngayTinhLuong.getMonth() / 3);
       return (
-        currentQuarter === recordQuarter &&
-        ngayTinhLuong.getFullYear() === currentDate.getFullYear()
+        selectedQuarter === recordQuarter &&
+        ngayTinhLuong.getFullYear() === filterDate.getFullYear()
       );
     } else if (filter === "year") {
-      return ngayTinhLuong.getFullYear() === currentDate.getFullYear();
+      return ngayTinhLuong.getFullYear() === filterDate.getFullYear();
     }
     return true;
   });
@@ -170,16 +159,9 @@ const BangLuong = () => {
 
       {/* Tìm kiếm và lọc */}
       <div className="d-flex justify-content-between mb-3">
-        <input
-          type="text"
-          className="form-control me-2"
-          placeholder="Tìm kiếm theo mã lương hoặc tên nhân viên"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
 
         <select
-          className="form-select"
+          className="form-select me-2"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         >
@@ -188,6 +170,29 @@ const BangLuong = () => {
           <option value="quarter">Theo quý</option>
           <option value="year">Theo năm</option>
         </select>
+
+        <DatePicker
+          selected={filterDate}
+          onChange={(date) => setFilterDate(date)}
+          showMonthYearPicker={filter === "month"}
+          showQuarterYearPicker={filter === "quarter"}
+          showYearPicker={filter === "year"}
+          dateFormat={
+            filter === "month"
+              ? "MM/yyyy"
+              : filter === "quarter"
+              ? "QQ/yyyy"
+              : "yyyy"
+          }
+          className="form-control"
+        />
+        <input
+          type="text"
+          className="form-control me-2"
+          placeholder="Tìm kiếm theo mã lương hoặc tên nhân viên"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
       </div>
 
       {/* Bảng dữ liệu */}
