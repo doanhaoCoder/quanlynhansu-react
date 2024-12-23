@@ -15,7 +15,7 @@ import EmployeeDetail from "./components/nhanvien/EmployeeDetail";
 import EditEmployee from "./components/nhanvien/EditEmployee";
 import Discipline from "./components/kyluat/Discipline";
 import EditDiscipline from "./components/kyluat/EditDiscipline";
-import ChiTietKyLuat from "./components/kyluat/ChiTietKyLuat";
+import ChiTietKyLuat from "./components/kyluat/DisciplineDetail";
 
 import Register from "./components/nguoidung/Register";
 import Login from "./components/nguoidung/Login";
