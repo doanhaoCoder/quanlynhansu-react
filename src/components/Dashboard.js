@@ -6,8 +6,6 @@ import { faUser } from "@fortawesome/free-solid-svg-icons"; // Đảm bảo đã
 import { faDollarSign } from "@fortawesome/free-solid-svg-icons";
 import { ImFontSize } from "react-icons/im";
 
-
-
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -66,13 +64,11 @@ const Dashboard = () => {
                   class="collapsed"
                   aria-expanded="false"
                 >
-                  <i class="fas fa-home" style={{ fontSize: '200%' }}></i>
-                  <p style={{ fontSize: '200%' }}>Dashboard</p>
+                  <i class="fas fa-home" style={{ fontSize: "200%" }}></i>
+                  <p style={{ fontSize: "200%" }}>Dashboard</p>
                 </a>
-                
               </li>
-             
-            
+
               <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarLayouts">
                   <FontAwesomeIcon icon={faUsers} className="me-2" />
@@ -106,9 +102,9 @@ const Dashboard = () => {
               </li>
               <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#tables">
-                <FontAwesomeIcon icon={faDollarSign} className="me-2" />
+                  <FontAwesomeIcon icon={faDollarSign} className="me-2" />
 
-                  <p>   Quản lý lương</p>
+                  <p> Quản lý lương</p>
                   <span class="caret"></span>
                 </a>
                 <div class="collapse" id="tables">
@@ -500,7 +496,9 @@ const Dashboard = () => {
                           <div className="u-text">
                             {user ? (
                               <>
-                                <h4>{user.ho} {user.ten}</h4>
+                                <h4>
+                                  {user.ho} {user.ten}
+                                </h4>
                                 <p className="text-muted">{user.email}</p>
                               </>
                             ) : (

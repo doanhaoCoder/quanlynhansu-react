@@ -265,19 +265,6 @@ const TinhLuong = () => {
           />
         </div>
 
-        <div className="form-group">
-          <label htmlFor="GhiChu">Ghi Chú (Ngày nghỉ, lý do nghỉ)</label>
-          <textarea
-            id="GhiChu"
-            name="GhiChu"
-            className="form-control"
-            value={tinhLuongData.GhiChu}
-            onChange={handleChange}
-            rows="3"
-            required
-
-          />
-        </div>
 
         <div className="form-group">
   <label htmlFor="PhuCap">Phụ Cấp</label>
@@ -319,6 +306,19 @@ const TinhLuong = () => {
   />
 </div>
 
+      <div className="form-group">
+        <label htmlFor="GhiChu">Ghi Chú (Ngày nghỉ, lý do nghỉ, phụ cấp, thưởng)</label>
+        <textarea
+          id="GhiChu"
+          name="GhiChu"
+          className="form-control"
+          value={tinhLuongData.GhiChu}
+          onChange={handleChange}
+          rows="3"
+          required
+
+        />
+      </div>
 
         <div className="form-group">
           <label htmlFor="NgayTinhLuong">Ngày Tính Lương</label>
