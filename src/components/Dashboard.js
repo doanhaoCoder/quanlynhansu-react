@@ -110,13 +110,23 @@ const Dashboard = () => {
                 <div class="collapse" id="tables">
                   <ul class="nav nav-collapse">
                     <li>
+                      <a href="/dashboard/tinh-luong">
+                        <span class="sub-item">Tính lương</span>
+                      </a>
+                    </li>
+                    <li>
                       <a href="/dashboard/bang-luong">
                         <span class="sub-item">Bảng lương</span>
                       </a>
                     </li>
                     <li>
-                      <a href="/dashboard/tinh-luong">
-                        <span class="sub-item">Tính lương</span>
+                      <a href="/dashboard/phu-cap">
+                        <span class="sub-item">Lương phụ cấp</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/dashboard/luong-thuong">
+                        <span class="sub-item">Lương thưởng</span>
                       </a>
                     </li>
                   </ul>

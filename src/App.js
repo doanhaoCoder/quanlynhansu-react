@@ -32,6 +32,8 @@ import EditUser from "./components/nguoidung/EditUser";
 import TinhLuong from "./components/luong/TinhLuong";
 import BangLuong from "./components/luong/BangLuong";
 import BangLuongDetail from "./components/luong/ChiTietBangLuong";
+import LuongThuong from "./components/luong/LuongThuong";
+import PhuCap from "./components/luong/PhuCap";
 
 const App = () => {
   return (
@@ -79,6 +81,8 @@ const App = () => {
           <Route path="tinh-luong" element={<TinhLuong />} />
           <Route path="bang-luong" element={<BangLuong />} />
           <Route path="chi-tiet-bang-luong/:id" element={<BangLuongDetail />} />
+          <Route path="luong-thuong" element={<LuongThuong />} />
+          <Route path="phu-cap" element={<PhuCap />} />
         </Route>
       </Routes>
     </Router>

@@ -1,0 +1,208 @@
+import React, { useState, useEffect } from "react";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { db } from "../../firebase";
+import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import { FaEye, FaSort } from "react-icons/fa";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
+const LuongThuong = () => {
+  const navigate = useNavigate();
+  const [bangLuong, setBangLuong] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [filterDate, setFilterDate] = useState(new Date());
+  const [sortConfig, setSortConfig] = useState(null);
+
+  useEffect(() => {
+    const fetchBangLuong = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "Luong"));
+        const data = querySnapshot.docs.map((doc, index) => ({
+          id: doc.id,
+          stt: index + 1,
+          ...doc.data(),
+        }));
+
+        const updatedData = await Promise.all(
+          data.map(async (item) => {
+            const nhanVienRef = doc(db, "nhanvien", item.NhanVienID);
+            const nhanVienSnap = await getDoc(nhanVienRef);
+
+            if (nhanVienSnap.exists()) {
+              const nhanVienData = nhanVienSnap.data();
+              item.TenNhanVien = nhanVienData.HoTenNV;
+              item.ChucVu = nhanVienData.ChucVu;
+
+              if (nhanVienData.ChucVu) {
+                const chucVuRef = doc(db, "chucvu", nhanVienData.ChucVu);
+                const chucVuSnap = await getDoc(chucVuRef);
+
+                if (chucVuSnap.exists()) {
+                  const chucVuData = chucVuSnap.data();
+                  item.TenChucVu = chucVuData.tenChucVu;
+                  item.LuongChucVu = chucVuData.luong;
+                }
+              }
+            } else {
+              item.TenNhanVien = "Không tìm thấy";
+              item.ChucVu = "Không tìm thấy";
+            }
+            return item;
+          })
+        );
+
+        setBangLuong(updatedData.filter(item => item.Thuong > 0));
+      } catch (error) {
+        console.error("Lỗi khi tải dữ liệu bảng lương:", error);
+      }
+    };
+
+    fetchBangLuong();
+  }, []);
+
+  const handleSort = (key) => {
+    let direction = "ascending";
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
+    }
+    setSortConfig({ key, direction });
+
+    const sortedData = [...bangLuong].sort((a, b) => {
+      if (a[key] < b[key]) {
+        return direction === "ascending" ? -1 : 1;
+      }
+      if (a[key] > b[key]) {
+        return direction === "ascending" ? 1 : -1;
+      }
+      return 0;
+    });
+    setBangLuong(sortedData);
+  };
+
+  const renderSortIcon = (key) => {
+    if (sortConfig && sortConfig.key === key) {
+      return sortConfig.direction === "ascending" ? (
+        <FontAwesomeIcon icon={faArrowUp} />
+      ) : (
+        <FontAwesomeIcon icon={faArrowDown} />
+      );
+    }
+    return <FaSort />;
+  };
+
+  const filteredBangLuong = bangLuong.filter((item) => {
+    const ngayTinhLuong = new Date(item.NgayTinhLuong);
+
+    if (filter === "all") return true;
+
+    if (filter === "month") {
+      return (
+        ngayTinhLuong.getMonth() === filterDate.getMonth() &&
+        ngayTinhLuong.getFullYear() === filterDate.getFullYear()
+      );
+    } else if (filter === "quarter") {
+      const selectedQuarter = Math.floor(filterDate.getMonth() / 3);
+      const recordQuarter = Math.floor(ngayTinhLuong.getMonth() / 3);
+      return (
+        selectedQuarter === recordQuarter &&
+        ngayTinhLuong.getFullYear() === filterDate.getFullYear()
+      );
+    } else if (filter === "year") {
+      return ngayTinhLuong.getFullYear() === filterDate.getFullYear();
+    }
+    return true;
+  });
+
+  const searchedBangLuong = filteredBangLuong.filter(
+    (item) =>
+      item.MaLuong.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.TenNhanVien.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className=" mt-4">
+      <h2>Danh Sách Nhân Viên Có Lương Thưởng</h2>
+
+      <div className="d-flex justify-content-between mb-3">
+        <select
+          className="form-select me-2"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        >
+          <option value="all">Tất cả</option>
+          <option value="month">Theo tháng</option>
+          <option value="quarter">Theo quý</option>
+          <option value="year">Theo năm</option>
+        </select>
+
+        <DatePicker
+          selected={filterDate}
+          onChange={(date) => setFilterDate(date)}
+          showMonthYearPicker={filter === "month"}
+          showQuarterYearPicker={filter === "quarter"}
+          showYearPicker={filter === "year"}
+          dateFormat={
+            filter === "month"
+              ? "MM/yyyy"
+              : filter === "quarter"
+              ? "QQ/yyyy"
+              : "yyyy"
+          }
+          className="form-control"
+        />
+        <input
+          type="text"
+          className="form-control me-2"
+          placeholder="Tìm kiếm theo mã lương hoặc tên nhân viên"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
+      <table className="table table-bordered table-striped mt-3">
+        <thead className="table-dark">
+          <tr>
+            <th onClick={() => handleSort("stt")}>STT {renderSortIcon("stt")}</th>
+            <th onClick={() => handleSort("MaLuong")}>Mã Lương {renderSortIcon("MaLuong")}</th>
+            <th onClick={() => handleSort("TenNhanVien")}>Tên Nhân Viên {renderSortIcon("TenNhanVien")}</th>
+            <th onClick={() => handleSort("ChucVu")}>Chức Vụ {renderSortIcon("ChucVu")}</th>
+            <th onClick={() => handleSort("Thuong")}>Lương Thưởng {renderSortIcon("Thuong")}</th>
+            <th onClick={() => handleSort("GhiChuThuong")}>Ghi Chú Thưởng {renderSortIcon("GhiChuThuong")}</th>
+            <th onClick={() => handleSort("NgayTinhLuong")}>Ngày Chấm {renderSortIcon("NgayTinhLuong")}</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody>
+          {searchedBangLuong.map((item, index) => (
+            <tr key={item.id}>
+              <td>{index + 1}</td>
+              <td>{item.MaLuong}</td>
+              <td>{item.TenNhanVien}</td>
+              <td>{item.TenChucVu}</td>
+              <td>{item.Thuong.toLocaleString()} VNĐ</td>
+              <td>{item.GhiChuThuong}</td>
+              <td>{new Date(item.NgayTinhLuong).toLocaleDateString()}</td>
+              <td>
+                <button
+                  className="btn btn-info me-2 mt-2"
+                  onClick={() =>
+                    navigate(`/dashboard/chi-tiet-bang-luong/${item.id}`)
+                  }
+                >
+                  <FaEye />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {searchedBangLuong.length === 0 && <p>Không có dữ liệu phù hợp.</p>}
+    </div>
+  );
+};
+
+export default LuongThuong;
