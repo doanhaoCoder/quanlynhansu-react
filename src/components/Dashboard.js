@@ -121,12 +121,12 @@ const Dashboard = () => {
                     </li>
                     <li>
                       <a href="/dashboard/phu-cap">
-                        <span class="sub-item">Lương phụ cấp</span>
+                        <span class="sub-item">Phụ cấp</span>
                       </a>
                     </li>
                     <li>
                       <a href="/dashboard/luong-thuong">
-                        <span class="sub-item">Lương thưởng</span>
+                        <span class="sub-item">Thưởng</span>
                       </a>
                     </li>
                     <li>

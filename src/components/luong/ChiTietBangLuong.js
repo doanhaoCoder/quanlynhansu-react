@@ -1,55 +1,100 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "../../firebase";
 
-const EmployeeDetail = () => {
+const ChiTietBangLuong = () => {
   const { id } = useParams(); // Lấy ID nhân viên từ URL
-  const [bangLuong, setbangLuong] = useState(null);
+  const [bangLuong, setBangLuong] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate(); // Khai báo hook navigate
-  // Hàm lấy thông tin chi tiết nhân viên
+
   useEffect(() => {
-    const fetchEmployee = async () => {
+    const fetchBangLuong = async () => {
       try {
-        const bangluonRef = doc(db, "Luong", id); // Dùng ID để lấy tài liệu
-        const bangluonSnap = await getDoc(bangluonRef);
+        const bangLuongRef = doc(db, "Luong", id); // Dùng ID để lấy tài liệu
+        const bangLuongSnap = await getDoc(bangLuongRef);
 
-        if (bangluonSnap.exists()) {
-          const employeeData = bangluonSnap.data();
-          // console.log("Nhân viên:", employeeData);
+        if (bangLuongSnap.exists()) {
+          const bangLuongData = bangLuongSnap.data();
 
-          if (employeeData.NhanVienID) {
-            const chucVuRef = doc(db, "nhanvien", employeeData.NhanVienID);
-            const chucVuSnap = await getDoc(chucVuRef);
-            if (chucVuSnap.exists()) {
-              const chucVuData = chucVuSnap.data();
-              employeeData.tenChucVu = chucVuData.tenChucVu; // Kiểm tra tên trường tại đây
-              employeeData.tenNV = chucVuData.HoTenNV; // Kiểm tra tên trường tại đây
-              employeeData.maNV = chucVuData.MaNV; // Kiểm tra tên trường tại đây
-              employeeData.tenPhong = chucVuData.tenPhong; // Kiểm tra tên trường tại đây
+          if (bangLuongData.NhanVienID) {
+            const nhanVienRef = doc(db, "nhanvien", bangLuongData.NhanVienID);
+            const nhanVienSnap = await getDoc(nhanVienRef);
+            if (nhanVienSnap.exists()) {
+              const nhanVienData = nhanVienSnap.data();
+              bangLuongData.tenChucVu = nhanVienData.tenChucVu;
+              bangLuongData.tenNV = nhanVienData.HoTenNV;
+              bangLuongData.maNV = nhanVienData.MaNV;
+              bangLuongData.tenPhong = nhanVienData.tenPhong;
 
+              const chucVuRef = doc(db, "chucvu", nhanVienData.ChucVu);
+              const chucVuSnap = await getDoc(chucVuRef);
+              if (chucVuSnap.exists()) {
+                bangLuongData.LuongChucVu = chucVuSnap.data().luong;
+              }
+
+              const chamCongChiTietQuery = query(
+                collection(db, "ChamCongChiTiet"),
+                where("MaChamCong", "==", bangLuongData.MaChamCong)
+              );
+              const chamCongChiTietSnap = await getDocs(chamCongChiTietQuery);
+              if (!chamCongChiTietSnap.empty) {
+                const chamCongChiTietData = chamCongChiTietSnap.docs[0].data();
+                bangLuongData.SoNgayCong = chamCongChiTietData.NgayCongThucTe;
+              }
+
+              const ghiChuPhuCap = JSON.parse(
+                bangLuongData.GhiChuPhuCap || "{}"
+              );
+              const phuCapIds = Object.keys(ghiChuPhuCap).filter(
+                (id) => ghiChuPhuCap[id]
+              );
+              const phuCapSnap = await getDocs(collection(db, "phucap"));
+              const phuCapData = phuCapSnap.docs.reduce((acc, doc) => {
+                acc[doc.id] = doc.data();
+                return acc;
+              }, {});
+              bangLuongData.GhiChuPhuCap = phuCapIds
+                .map((id) => phuCapData[id]?.noiDungPhuCap)
+                .join(", ");
+
+              const ghiChuThuong = JSON.parse(
+                bangLuongData.GhiChuThuong || "{}"
+              );
+              const thuongIds = Object.keys(ghiChuThuong).filter(
+                (id) => ghiChuThuong[id]
+              );
+              const thuongSnap = await getDocs(collection(db, "thuong"));
+              const thuongData = thuongSnap.docs.reduce((acc, doc) => {
+                acc[doc.id] = doc.data();
+                return acc;
+              }, {});
+              bangLuongData.GhiChuThuong = thuongIds
+                .map((id) => thuongData[id]?.noiDungThuong)
+                .join(", ");
             }
           }
 
-          // Cập nhật state employee với dữ liệu đầy đủ
-          setbangLuong(employeeData);
-          console.log("Dữ liệu:", employeeData);
-        }
-
-        if (bangluonSnap.exists()) {
-          // setbangLuong(bangluonSnap.data());
+          setBangLuong(bangLuongData);
         } else {
           console.error("No such document!");
         }
       } catch (error) {
-        console.error("Error fetching employee: ", error);
+        console.error("Error fetching bang luong: ", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchEmployee();
+    fetchBangLuong();
   }, [id]);
 
   if (loading) {
@@ -57,18 +102,13 @@ const EmployeeDetail = () => {
   }
 
   if (!bangLuong) {
-    return <div>Không tìm thấy thông tin nhân viên.</div>;
+    return <div>Không tìm thấy thông tin bảng lương.</div>;
   }
 
-  // Hiển thị chi tiết nhân viên
   return (
     <div className="container mt-5">
       <h2 className="mb-4" style={{ fontSize: "2rem", fontWeight: "bold" }}>
-        {/* Nút Trở lại */}
-        <button
-          className="btn btn-primary mb-2"
-          onClick={() => navigate(-1)} // Quay lại trang trước đó
-        >
+        <button className="btn btn-primary mb-2" onClick={() => navigate(-1)}>
           Trở lại
         </button>
         <br></br>
@@ -99,8 +139,11 @@ const EmployeeDetail = () => {
               <strong>Phòng ban:</strong> {bangLuong.tenPhong}
             </p>
             <p>
-              <strong>Lương Ngày:</strong>{" "}
-              {bangLuong.LuongNgay.toLocaleString()} VNĐ
+              <strong>Lương Chức Vụ:</strong>{" "}
+              {bangLuong.LuongChucVu
+                ? bangLuong.LuongChucVu.toLocaleString()
+                : "N/A"}{" "}
+              VNĐ
             </p>
           </div>
           <div className="col-6">
@@ -108,16 +151,15 @@ const EmployeeDetail = () => {
               <strong>Số Ngày Công:</strong> {bangLuong.SoNgayCong}
             </p>
             <p>
-              <p>
-                <strong>Lí do nghỉ:</strong> {bangLuong.GhiChuNghi}
-              </p>
-              <strong>Phụ Cấp:</strong> {bangLuong.PhuCap.toLocaleString()} VNĐ
+              <strong>Phụ Cấp:</strong>{" "}
+              {bangLuong.PhuCap ? bangLuong.PhuCap.toLocaleString() : "0"} VNĐ
             </p>
             <p>
               <strong>Ghi Chú Phụ Cấp:</strong> {bangLuong.GhiChuPhuCap}
             </p>
             <p>
-              <strong>Thưởng:</strong> {bangLuong.Thuong.toLocaleString()} VNĐ
+              <strong>Thưởng:</strong>{" "}
+              {bangLuong.Thuong ? bangLuong.Thuong.toLocaleString() : "0"} VNĐ
             </p>
             <p>
               <strong>Ghi Chú Thưởng:</strong> {bangLuong.GhiChuThuong}
@@ -127,7 +169,10 @@ const EmployeeDetail = () => {
               style={{ fontSize: "1.8rem", lineHeight: "2rem" }}
             >
               <strong>Tổng Lương:</strong>{" "}
-              {bangLuong.TongLuong.toLocaleString()} VNĐ
+              {bangLuong.TongLuong
+                ? bangLuong.TongLuong.toLocaleString()
+                : "N/A"}{" "}
+              VNĐ
             </p>
           </div>
         </div>
@@ -153,4 +198,4 @@ const EmployeeDetail = () => {
   );
 };
 
-export default EmployeeDetail;
+export default ChiTietBangLuong;

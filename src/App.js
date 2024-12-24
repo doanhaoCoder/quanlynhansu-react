@@ -35,8 +35,18 @@ import EditUser from "./components/nguoidung/EditUser";
 import TinhLuong from "./components/luong/TinhLuong";
 import BangLuong from "./components/luong/BangLuong";
 import BangLuongDetail from "./components/luong/ChiTietBangLuong";
-import LuongThuong from "./components/luong/LuongThuong";
-import PhuCap from "./components/luong/PhuCap";
+import LuongThuong from "./components/thuong/Thuong";
+import PhuCap from "./components/phucap/PhuCap";
+import ChamCong from "./components/chamcong/ChamCong";
+import DanhSachChamCong from "./components/chamcong/DanhSachChamCong";
+import ChamCongChiTiet from "./components/chamcong/ChamCongChiTiet";
+
+import Thuong from "./components/thuong/Thuong";
+import EditThuong from "./components/thuong/EditThuong";
+import ThuongView from "./components/thuong/ThuongView";
+
+import PhuCapView from "./components/phucap/PhuCapView";
+import EditPhuCap from "./components/phucap/EditPhuCap";
 
 const App = () => {
   return (
@@ -86,9 +96,17 @@ const App = () => {
           <Route path="chi-tiet-bang-luong/:id" element={<BangLuongDetail />} />
           <Route path="luong-thuong" element={<LuongThuong />} />
           <Route path="phu-cap" element={<PhuCap />} />
+          <Route path="cham-cong" element={<ChamCong />} />
+          <Route path="danh-sach-cham-cong" element={<DanhSachChamCong />} />
+          <Route path="chi-tiet-cham-cong/:id" element={<ChamCongChiTiet />} />
           <Route path="ky-luat" element={<Discipline />} />
           <Route path="sua-ky-luat/:id" element={<EditDiscipline />} />
           <Route path="chi-tiet-ky-luat/:id" element={<ChiTietKyLuat />} />
+          <Route path="luong-thuong" element={<Thuong />} />
+          <Route path="chinh-sua-thuong/:id" element={<EditThuong />} />
+          <Route path="xem-thuong/:id" element={<ThuongView />} />
+          <Route path="xem-phu-cap/:id" element={<PhuCapView />} />
+          <Route path="chinh-sua-phu-cap/:id" element={<EditPhuCap />} />
         </Route>
       </Routes>
     </Router>

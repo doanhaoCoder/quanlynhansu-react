@@ -8,6 +8,7 @@ import {
   limit,
   doc,
   getDoc,
+  where,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
@@ -15,44 +16,36 @@ import { useParams } from "react-router-dom";
 
 const TinhLuong = () => {
   const [searchTerm, setSearchTerm] = useState("");
-
   const sessionUser = JSON.parse(sessionStorage.getItem("user"));
   const { id } = useParams(); // Lấy ID nhân viên từ URL
-  const [employee, setEmployee] = useState(null);
+  const [attendanceList, setAttendanceList] = useState([]);
+  const [selectedAttendance, setSelectedAttendance] = useState(null);
   const [nhanVienList, setNhanVienList] = useState([]);
+  const [phuCap, setPhuCap] = useState({});
+  const [thuong, setThuong] = useState({});
   const [tinhLuongData, setTinhLuongData] = useState({
     MaLuong: "",
-    NhanVienID: "",
-    SoNgayCong: 0,
-    GhiChuNghi: "", // Changed from GhiChu
-    GhiChuPhuCap: "", // New field for allowance note
-    GhiChuThuong: "", // New field for bonus note
-    PhuCap: 0,
-    Thuong: 0,
+    MaChamCong: "",
     NgayTinhLuong: "",
-    NguoiTao: "", // Tên người tạo
-    NgayTao: "", // Ngày tạo
-    LuongNgay: 0, // Lương cơ bản
+    NguoiTao: sessionUser?.username || "",
+    NgayTao: new Date().toISOString(),
   });
-  // const [username, setUsername] = useState(""); // Tên người tạo từ session
   const [error, setError] = useState(""); // Lỗi nếu có trường bắt buộc chưa nhập
+  const [allowances, setAllowances] = useState([]);
+  const [bonuses, setBonuses] = useState([]);
 
   useEffect(() => {
-    // Lấy danh sách nhân viên
-    const fetchNhanVien = async () => {
-      const nhanVienSnap = await getDocs(collection(db, "nhanvien"));
-      const data = nhanVienSnap.docs.map((doc) => ({
+    // Lấy danh sách chấm công
+    const fetchAttendance = async () => {
+      const attendanceSnap = await getDocs(collection(db, "ChamCong"));
+      const data = attendanceSnap.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-      setNhanVienList(data);
+      setAttendanceList(data);
     };
 
-    fetchNhanVien();
-
-    // Lấy thông tin người tạo từ session
-
-    // setUsername(userSession);
+    fetchAttendance();
 
     // Lấy mã lương tiếp theo (tăng dần)
     const fetchMaLuong = async () => {
@@ -81,118 +74,144 @@ const TinhLuong = () => {
     };
 
     fetchMaLuong();
+
+    // Lấy danh sách phụ cấp
+    const fetchAllowances = async () => {
+      const allowanceSnap = await getDocs(collection(db, "phucap"));
+      const allowanceData = allowanceSnap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setAllowances(allowanceData);
+    };
+
+    fetchAllowances();
+
+    // Lấy danh sách thưởng
+    const fetchBonuses = async () => {
+      const bonusSnap = await getDocs(collection(db, "thuong"));
+      const bonusData = bonusSnap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setBonuses(bonusData);
+    };
+
+    fetchBonuses();
   }, []);
 
-  // Lấy thông tin nhân viên để tính lương cơ bản
-  const handleNhanVienChange = async (e) => {
-    const nvId = e.target.value;
+  const handleAttendanceChange = async (e) => {
+    const attendanceId = e.target.value;
     setTinhLuongData({
       ...tinhLuongData,
-      NhanVienID: nvId,
+      MaChamCong: attendanceId,
     });
 
-    // Lấy thông tin nhân viên để lấy Lương cơ bản
-    if (nvId) {
-      const nhanVienRef = doc(db, "nhanvien", nvId);
-      const nhanVienSnap = await getDoc(nhanVienRef);
+    if (attendanceId) {
+      const attendanceRef = doc(db, "ChamCong", attendanceId);
+      const attendanceSnap = await getDoc(attendanceRef);
 
-      const employeeData = nhanVienSnap.data();
-      if (employeeData.ChucVu) {
-        const chucVuRef = doc(db, "chucvu", employeeData.ChucVu);
-        const chucVuSnap = await getDoc(chucVuRef);
-        if (chucVuSnap.exists()) {
-          const chucVuData = chucVuSnap.data();
-          employeeData.tenChucVu = chucVuData.tenChucVu; // Kiểm tra tên trường tại đây
-          employeeData.luongChucVu = chucVuData.luong; // Kiểm tra tên trường tại đây
-        }
+      if (attendanceSnap.exists()) {
+        const attendanceData = attendanceSnap.data();
+        setSelectedAttendance(attendanceData);
+
+        const chamCongChiTietQuery = query(
+          collection(db, "ChamCongChiTiet"),
+          where("MaChamCong", "==", attendanceId)
+        );
+        const chamCongChiTietSnap = await getDocs(chamCongChiTietQuery);
+        const chiTietData = chamCongChiTietSnap.docs.map((doc) => doc.data());
+
+        const nhanVienSnap = await getDocs(collection(db, "nhanvien"));
+        const nhanVienData = nhanVienSnap.docs.reduce((acc, doc) => {
+          acc[doc.id] = doc.data();
+          return acc;
+        }, {});
+
+        const nhanVienList = await Promise.all(
+          chiTietData.map(async (chiTiet) => {
+            const nhanVien = nhanVienData[chiTiet.NhanVienID];
+            if (nhanVien) {
+              const chucVuRef = doc(db, "chucvu", nhanVien.ChucVu);
+              const chucVuSnap = await getDoc(chucVuRef);
+              if (chucVuSnap.exists()) {
+                nhanVien.LuongChucVu = chucVuSnap.data().luong;
+              }
+            }
+            return {
+              ...chiTiet,
+              ...nhanVien,
+            };
+          })
+        );
+
+        setNhanVienList(nhanVienList);
       }
-
-      // Cập nhật state employee với dữ liệu đầy đủ
-      setEmployee(employeeData);
-
-      if (nhanVienSnap.exists()) {
-        const nhanVienData = nhanVienSnap.data();
-        setTinhLuongData((prevData) => ({
-          ...prevData,
-          LuongNgay: employeeData.luongChucVu,
-        }));
-      }
-      // console.log(employeeData.luongChucVu);
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-  
-    // Chỉ xử lý nếu giá trị nhập vào là hợp lệ (không phải ký tự không phải số)
-    const formattedValue = value.replace(/\D/g, ''); // Loại bỏ tất cả ký tự không phải số
-  
-    // Kiểm tra nếu là các trường cần chuyển thành số (Thuong, PhuCap)
-    const newValue = (name === "Thuong" || name === "PhuCap") ? Number(formattedValue) : value;
-  
-    setTinhLuongData({
-      ...tinhLuongData,
-      [name]: newValue,
-    });
+  const handlePhuCapChange = (nvId, allowanceId) => {
+    setPhuCap((prev) => ({
+      ...prev,
+      [nvId]: {
+        ...prev[nvId],
+        [allowanceId]: !prev[nvId]?.[allowanceId],
+      },
+    }));
+  };
+
+  const handleThuongChange = (nvId, bonusId) => {
+    setThuong((prev) => ({
+      ...prev,
+      [nvId]: {
+        ...prev[nvId],
+        [bonusId]: !prev[nvId]?.[bonusId],
+      },
+    }));
   };
 
   const handleSubmit = async (e) => {
-    const selectedEmployee = nhanVienList.find(
-      (nv) => nv.id === tinhLuongData.NhanVienID
-    );
-  
-    if (selectedEmployee && selectedEmployee.TinhTrang === "Đã nghỉ việc") {
-      // Hiển thị thông báo lỗi nếu nhân viên đã nghỉ việc
-      alert("Không thể chọn nhân viên đã nghỉ việc!");
-      // toast.error("Không thể chọn nhân viên đã nghỉ việc!");
-      return; // Dừng lại và không tiếp tục lưu
-    }
     e.preventDefault();
 
-    // Kiểm tra xem tất cả các trường bắt buộc đã được nhập hay chưa
-    if (
-      !tinhLuongData.NhanVienID ||
-      !tinhLuongData.SoNgayCong ||
-      !tinhLuongData.NgayTinhLuong ||
-      !tinhLuongData.GhiChuNghi || // Changed from GhiChu
-      (tinhLuongData.PhuCap > 0 && !tinhLuongData.GhiChuPhuCap) || // Check if allowance note is required
-      (tinhLuongData.Thuong > 0 && !tinhLuongData.GhiChuThuong) // Check if bonus note is required
-    ) {
-      setError("Vui lòng nhập đủ các trường bắt buộc!");
-      return;
-    }
-
     try {
-      // Tính lương theo số ngày công
-      const tongLuong =
-        parseFloat(tinhLuongData.LuongNgay) *
-          parseInt(tinhLuongData.SoNgayCong) +
-        parseFloat(tinhLuongData.PhuCap) +
-        parseFloat(tinhLuongData.Thuong);
+      for (const nv of nhanVienList) {
+        const totalAllowances = Object.keys(phuCap[nv.NhanVienID] || {}).reduce((sum, allowanceId) => {
+          const allowance = allowances.find((a) => a.id === allowanceId);
+          return sum + (phuCap[nv.NhanVienID][allowanceId] ? (allowance ? allowance.soTienPhuCap : 0) : 0);
+        }, 0);
 
-      // Thêm dữ liệu lương vào Firestore
-      await addDoc(collection(db, "Luong"), {
-        ...tinhLuongData,
-        NguoiTao: sessionUser?.username,
-        NgayTao: new Date().toISOString(),
-        TongLuong: tongLuong,
-      });
+        const totalBonuses = Object.keys(thuong[nv.NhanVienID] || {}).reduce((sum, bonusId) => {
+          const bonus = bonuses.find((b) => b.id === bonusId);
+          return sum + (thuong[nv.NhanVienID][bonusId] ? (bonus ? bonus.soTienThuong : 0) : 0);
+        }, 0);
+
+        const tongLuong =
+          parseFloat(nv.LuongChucVu) * parseFloat(nv.NgayCongThucTe) +
+          totalAllowances +
+          totalBonuses;
+
+        await addDoc(collection(db, "Luong"), {
+          ...tinhLuongData,
+          NhanVienID: nv.NhanVienID,
+          PhuCap: totalAllowances,
+          GhiChuPhuCap: JSON.stringify(phuCap[nv.NhanVienID] || {}),
+          Thuong: totalBonuses,
+          GhiChuThuong: JSON.stringify(thuong[nv.NhanVienID] || {}),
+          TongLuong: tongLuong,
+        });
+      }
 
       toast.success("Tính lương thành công!");
       setTinhLuongData({
         MaLuong: "",
-        NhanVienID: "",
-        SoNgayCong: 0,
-        GhiChuNghi: "", // Changed from GhiChu
-        GhiChuPhuCap: "", // New field for allowance note
-        GhiChuThuong: "", // New field for bonus note
-        PhuCap: 0,
-        Thuong: 0,
+        MaChamCong: "",
         NgayTinhLuong: "",
-        NguoiTao: sessionUser?.username,
+        NguoiTao: sessionUser?.username || "",
         NgayTao: new Date().toISOString(),
-        LuongNgay: 0,
       });
+      setPhuCap({});
+      setThuong({});
+      setError("");
     } catch (error) {
       toast.error("Lỗi khi tính lương: " + error.message);
     }
@@ -215,145 +234,40 @@ const TinhLuong = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="NhanVienID">Chọn Nhân Viên (Tìm kiếm mã nhân viên hoặc tên)</label>
-
-          {/* Ô tìm kiếm */}
+          <label htmlFor="searchTerm">Tìm kiếm mã chấm công</label>
           <input
             type="text"
+            id="searchTerm"
+            name="searchTerm"
             className="form-control mb-2"
-            placeholder="Tìm nhân viên..."
+            placeholder="Tìm mã chấm công..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+        </div>
 
-          {/* Dropdown danh sách nhân viên */}
+        <div className="form-group">
+          <label htmlFor="MaChamCong">Chọn Mã Chấm Công</label>
           <select
-  id="NhanVienID"
-  name="NhanVienID"
-  className="form-control"
-  value={tinhLuongData.NhanVienID}
-  onChange={handleNhanVienChange}
-  required
->
-  <option value="">Chọn nhân viên</option>
-  {nhanVienList
-    .filter(
-      (nv) =>
-        nv.MaNV.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        nv.HoTenNV.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        nv.TinhTrang.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .map((nv) => (
-      <option
-        key={nv.id}
-        value={nv.id}
-        style={{
-          color: nv.TinhTrang === "Đã nghỉ việc" ? "red" : "black", // Màu đỏ nếu nghỉ việc
-        }}
-      >
-        {nv.MaNV} - {nv.HoTenNV} - ({nv.TinhTrang})
-      </option>
-    ))}
-</select>
-
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="SoNgayCong">Số Ngày Công</label>
-          <input
-            type="number"
-            id="SoNgayCong"
-            name="SoNgayCong"
+            id="MaChamCong"
+            name="MaChamCong"
             className="form-control"
-            value={tinhLuongData.SoNgayCong}
-            onChange={handleChange}
+            value={tinhLuongData.MaChamCong}
+            onChange={handleAttendanceChange}
             required
-          />
+          >
+            <option value="">Chọn mã chấm công</option>
+            {attendanceList
+              .filter((attendance) =>
+                attendance.MaChamCong.toLowerCase().includes(searchTerm.toLowerCase())
+              )
+              .map((attendance) => (
+                <option key={attendance.id} value={attendance.id}>
+                  {attendance.MaChamCong} - {attendance.Thang}/{attendance.Nam}
+                </option>
+              ))}
+          </select>
         </div>
-
-      <div className="form-group">
-        <label htmlFor="GhiChuNghi">Ghi Chú (Ngày nghỉ, lý do nghỉ)</label> {/* Changed from GhiChu */}
-        <textarea
-          id="GhiChuNghi"
-          name="GhiChuNghi"
-          className="form-control"
-          value={tinhLuongData.GhiChuNghi} // Changed from GhiChu
-          onChange={handleChange}
-          rows="3"
-          required
-  
-        />
-      </div>
-
-        <div className="form-group">
-  <label htmlFor="PhuCap">Phụ Cấp</label>
-  <input
-    type="text"
-    id="PhuCap"
-    name="PhuCap"
-    className="form-control"
-    value={new Intl.NumberFormat().format(tinhLuongData.PhuCap)} // Định dạng số với dấu phân cách
-    onChange={handleChange}
-    onBlur={(e) => {
-      // Khi người dùng rời khỏi ô input, chuyển lại thành số để gửi vào Firebase
-      const formattedValue = e.target.value.replace(/\D/g, '');
-      setTinhLuongData({
-        ...tinhLuongData,
-        PhuCap: Number(formattedValue),
-      });
-    }}
-  />
-</div>
-
-{tinhLuongData.PhuCap > 0 && (
-  <div className="form-group">
-    <label htmlFor="GhiChuPhuCap">Ghi Chú Phụ Cấp</label> {/* New field for allowance note */}
-    <textarea
-      type="text"
-      id="GhiChuPhuCap"
-      name="GhiChuPhuCap"
-      className="form-control"
-      value={tinhLuongData.GhiChuPhuCap} // New field for allowance note
-      onChange={handleChange}
-      required
-    />
-  </div>
-)}
-
-<div className="form-group">
-  <label htmlFor="Thuong">Thưởng</label>
-  <input
-    type="text"
-    id="Thuong"
-    name="Thuong"
-    className="form-control"
-    value={new Intl.NumberFormat().format(tinhLuongData.Thuong)} // Định dạng số với dấu phân cách
-    onChange={handleChange}
-    onBlur={(e) => {
-      // Khi người dùng rời khỏi ô input, chuyển lại thành số để gửi vào Firebase
-      const formattedValue = e.target.value.replace(/\D/g, '');
-      setTinhLuongData({
-        ...tinhLuongData,
-        Thuong: Number(formattedValue),
-      });
-    }}
-  />
-</div>
-
-{tinhLuongData.Thuong > 0 && (
-  <div className="form-group">
-    <label htmlFor="GhiChuThuong">Ghi Chú Thưởng</label> {/* New field for bonus note */}
-    <textarea
-      type="text"
-      id="GhiChuThuong"
-      name="GhiChuThuong"
-      className="form-control"
-      value={tinhLuongData.GhiChuThuong} // New field for bonus note
-      onChange={handleChange}
-      required
-    />
-  </div>
-)}
 
         <div className="form-group">
           <label htmlFor="NgayTinhLuong">Ngày Tính Lương</label>
@@ -363,10 +277,77 @@ const TinhLuong = () => {
             name="NgayTinhLuong"
             className="form-control"
             value={tinhLuongData.NgayTinhLuong}
-            onChange={handleChange}
+            onChange={(e) =>
+              setTinhLuongData({ ...tinhLuongData, NgayTinhLuong: e.target.value })
+            }
             required
           />
         </div>
+
+        {nhanVienList.length > 0 && (
+          <div className="table-responsive">
+            <table className="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Mã NV</th>
+                  <th>Tên NV</th>
+                  <th>Phụ Cấp</th>
+                  <th>Thưởng</th>
+                </tr>
+              </thead>
+              <tbody>
+                {nhanVienList.map((nv) => (
+                  <tr key={nv.NhanVienID}>
+                    <td>{nv.MaNV}</td>
+                    <td>{nv.HoTenNV}</td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={phuCap[nv.NhanVienID] || false}
+                        onChange={() => handlePhuCapChange(nv.NhanVienID, "toggle")}
+                      />
+                      {phuCap[nv.NhanVienID] && (
+                        <div>
+                          {allowances.map((allowance) => (
+                            <div key={allowance.id}>
+                              <input
+                                type="checkbox"
+                                checked={phuCap[nv.NhanVienID]?.[allowance.id] || false}
+                                onChange={() => handlePhuCapChange(nv.NhanVienID, allowance.id)}
+                              />
+                              {allowance.maPhuCap} - {allowance.noiDungPhuCap}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={thuong[nv.NhanVienID] || false}
+                        onChange={() => handleThuongChange(nv.NhanVienID, "toggle")}
+                      />
+                      {thuong[nv.NhanVienID] && (
+                        <div>
+                          {bonuses.map((bonus) => (
+                            <div key={bonus.id}>
+                              <input
+                                type="checkbox"
+                                checked={thuong[nv.NhanVienID]?.[bonus.id] || false}
+                                onChange={() => handleThuongChange(nv.NhanVienID, bonus.id)}
+                              />
+                              {bonus.maThuong} - {bonus.noiDungThuong}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         <button type="submit" className="btn btn-primary">
           Tính Lương

@@ -5,6 +5,8 @@ import {
   doc,
   deleteDoc,
   getDoc,
+  query,
+  where,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
@@ -57,16 +59,30 @@ const BangLuong = () => {
                   item.LuongChucVu = chucVuData.luong;
                 }
               }
+
+              const chamCongChiTietQuery = query(
+                collection(db, "ChamCongChiTiet"),
+                where("MaChamCong", "==", item.MaChamCong),
+                where("NhanVienID", "==", item.NhanVienID)
+              );
+              const chamCongChiTietSnap = await getDocs(chamCongChiTietQuery);
+              const chamCongChiTietData = chamCongChiTietSnap.docs.map((doc) => doc.data());
+
+              if (chamCongChiTietData.length > 0) {
+                item.SoNgayCong = chamCongChiTietData[0].NgayCongThucTe;
+              } else {
+                item.SoNgayCong = "N/A";
+              }
             } else {
               item.TenNhanVien = "Không tìm thấy";
               item.ChucVu = "Không tìm thấy";
+              item.SoNgayCong = "N/A";
             }
             return item;
           })
         );
 
         setBangLuong(updatedData);
-        console.error("db:", updatedData);
       } catch (error) {
         console.error("Lỗi khi tải dữ liệu bảng lương:", error);
       }
