@@ -30,16 +30,8 @@ const ChiTietBangLuong = () => {
             const nhanVienSnap = await getDoc(nhanVienRef);
             if (nhanVienSnap.exists()) {
               const nhanVienData = nhanVienSnap.data();
-              bangLuongData.tenChucVu = nhanVienData.tenChucVu;
               bangLuongData.tenNV = nhanVienData.HoTenNV;
               bangLuongData.maNV = nhanVienData.MaNV;
-              bangLuongData.tenPhong = nhanVienData.tenPhong;
-
-              const chucVuRef = doc(db, "chucvu", nhanVienData.ChucVu);
-              const chucVuSnap = await getDoc(chucVuRef);
-              if (chucVuSnap.exists()) {
-                bangLuongData.LuongChucVu = chucVuSnap.data().luong;
-              }
 
               const chamCongChiTietQuery = query(
                 collection(db, "ChamCongChiTiet"),
@@ -141,10 +133,10 @@ const ChiTietBangLuong = () => {
               <strong>Mã Nhân Viên:</strong> {bangLuong.maNV}
             </p>
             <p>
-              <strong>Chức Vụ:</strong> {bangLuong.tenChucVu}
+              <strong>Chức Vụ:</strong> {bangLuong.ChucVu}
             </p>
             <p>
-              <strong>Phòng ban:</strong> {bangLuong.tenPhong}
+              <strong>Phòng ban:</strong> {bangLuong.PhongBan}
             </p>
             <p>
               <strong>Lương Chức Vụ:</strong>{" "}

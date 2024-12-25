@@ -48,18 +48,6 @@ const BangLuong = () => {
               const nhanVienData = nhanVienSnap.data();
               item.MaNhanVien = nhanVienData.MaNV; // Add this line
               item.TenNhanVien = nhanVienData.HoTenNV;
-              item.ChucVu = nhanVienData.ChucVu;
-
-              if (nhanVienData.ChucVu) {
-                const chucVuRef = doc(db, "chucvu", nhanVienData.ChucVu);
-                const chucVuSnap = await getDoc(chucVuRef);
-
-                if (chucVuSnap.exists()) {
-                  const chucVuData = chucVuSnap.data();
-                  item.TenChucVu = chucVuData.tenChucVu;
-                  item.LuongChucVu = chucVuData.luong;
-                }
-              }
 
               const chamCongChiTietQuery = query(
                 collection(db, "ChamCongChiTiet"),
@@ -67,17 +55,18 @@ const BangLuong = () => {
                 where("NhanVienID", "==", item.NhanVienID)
               );
               const chamCongChiTietSnap = await getDocs(chamCongChiTietQuery);
-              const chamCongChiTietData = chamCongChiTietSnap.docs.map((doc) => doc.data());
+              const chamCongChiTietData = chamCongChiTietSnap.docs.map((doc) =>
+                doc.data()
+              );
 
               if (chamCongChiTietData.length > 0) {
                 item.SoNgayCong = chamCongChiTietData[0].NgayCongThucTe;
               } else {
-                item.SoNgayCong = "N/A";
+                item.SoNgayCong = "Chấm công này đã bị xóa";
               }
             } else {
-              item.TenNhanVien = "Không tìm thấy";
-              item.ChucVu = "Không tìm thấy";
-              item.SoNgayCong = "N/A";
+              item.TenNhanVien = "Nhân viên nầy đã bị xóa";
+              item.SoNgayCong = "Nhân viên này đã bị xóa";
             }
             return item;
           })
@@ -125,7 +114,7 @@ const BangLuong = () => {
         <FontAwesomeIcon icon={faArrowDown} />
       );
     }
-    return <FaSort />; 
+    return <FaSort />;
   };
 
   // Xử lý xóa bản ghi
@@ -176,7 +165,6 @@ const BangLuong = () => {
 
       {/* Tìm kiếm và lọc */}
       <div className="d-flex justify-content-between mb-3">
-
         <select
           className="form-select me-2"
           value={filter}
@@ -216,14 +204,31 @@ const BangLuong = () => {
       <table className="table table-bordered table-striped mt-3">
         <thead className="table-dark">
           <tr>
-            <th onClick={() => handleSort("stt")}>STT {renderSortIcon("stt")}</th>
-            <th onClick={() => handleSort("MaLuong")}>Mã Lương {renderSortIcon("MaLuong")}</th>
-            <th onClick={() => handleSort("MaNhanVien")}>Mã Nhân Viên {renderSortIcon("MaNhanVien")}</th> {/* Add this line */}
-            <th onClick={() => handleSort("TenNhanVien")}>Tên Nhân Viên {renderSortIcon("TenNhanVien")}</th>
-            <th onClick={() => handleSort("ChucVu")}>Chức Vụ {renderSortIcon("ChucVu")}</th>
-            <th onClick={() => handleSort("SoNgayCong")}>Số Ngày Công {renderSortIcon("SoNgayCong")}</th>
-            <th onClick={() => handleSort("TongLuong")}>Tổng Lương {renderSortIcon("TongLuong")}</th>
-            <th onClick={() => handleSort("NgayTinhLuong")}>Ngày Chấm {renderSortIcon("NgayTinhLuong")}</th>
+            <th onClick={() => handleSort("stt")}>
+              STT {renderSortIcon("stt")}
+            </th>
+            <th onClick={() => handleSort("MaLuong")}>
+              Mã Lương {renderSortIcon("MaLuong")}
+            </th>
+            <th onClick={() => handleSort("MaNhanVien")}>
+              Mã Nhân Viên {renderSortIcon("MaNhanVien")}
+            </th>{" "}
+            {/* Add this line */}
+            <th onClick={() => handleSort("TenNhanVien")}>
+              Tên Nhân Viên {renderSortIcon("TenNhanVien")}
+            </th>
+            <th onClick={() => handleSort("ChucVu")}>
+              Chức Vụ {renderSortIcon("ChucVu")}
+            </th>
+            <th onClick={() => handleSort("SoNgayCong")}>
+              Số Ngày Công {renderSortIcon("SoNgayCong")}
+            </th>
+            <th onClick={() => handleSort("TongLuong")}>
+              Tổng Lương {renderSortIcon("TongLuong")}
+            </th>
+            <th onClick={() => handleSort("NgayTinhLuong")}>
+              Ngày Chấm {renderSortIcon("NgayTinhLuong")}
+            </th>
             <th>Hành động</th>
           </tr>
         </thead>
@@ -232,9 +237,9 @@ const BangLuong = () => {
             <tr key={item.id}>
               <td>{index + 1}</td>
               <td>{item.MaLuong}</td>
-              <td>{item.MaNhanVien}</td> {/* Add this line */}
+              <td>{item.MaNhanVien || "Nhân viên nầy đã bị xóa"}</td> {/* Add this line */}
               <td>{item.TenNhanVien}</td>
-              <td>{item.TenChucVu}</td>
+              <td>{item.ChucVu}</td>
               <td>{item.SoNgayCong}</td>
               <td>{item.TongLuong.toLocaleString()} VNĐ</td>
               <td>{new Date(item.NgayTinhLuong).toLocaleDateString()}</td>

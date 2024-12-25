@@ -145,7 +145,14 @@ const TinhLuong = () => {
               const chucVuRef = doc(db, "chucvu", nhanVien.ChucVu);
               const chucVuSnap = await getDoc(chucVuRef);
               if (chucVuSnap.exists()) {
+                nhanVien.tenChucVu = chucVuSnap.data().tenChucVu;
                 nhanVien.LuongChucVu = chucVuSnap.data().luong;
+              }
+
+              const phongBanRef = doc(db, "phongban", nhanVien.PhongBan);
+              const phongBanSnap = await getDoc(phongBanRef);
+              if (phongBanSnap.exists()) {
+                nhanVien.tenPhong = phongBanSnap.data().tenPhong;
               }
             }
             return {
@@ -203,6 +210,9 @@ const TinhLuong = () => {
         await addDoc(collection(db, "Luong"), {
           ...tinhLuongData,
           NhanVienID: nv.NhanVienID,
+          PhongBan: nv.tenPhong,
+          ChucVu: nv.tenChucVu,
+          LuongChucVu: nv.LuongChucVu,
           PhuCap: totalAllowances,
           GhiChuPhuCap: JSON.stringify(phuCap[nv.NhanVienID] || {}),
           Thuong: totalBonuses,
