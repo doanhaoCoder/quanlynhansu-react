@@ -14,7 +14,7 @@ const ChamCong = () => {
   const [ngayNghiCoPhep, setNgayNghiCoPhep] = useState({});
   const [ngayNghiKhongPhep, setNgayNghiKhongPhep] = useState({});
   const [hasDaysOff, setHasDaysOff] = useState({});
-  const [isDuplicate, setIsDuplicate] = useState(false);
+  const [duplicateMonths, setDuplicateMonths] = useState([]);
   const [chamCongData, setChamCongData] = useState({
     MaChamCong: "",
     Thang: new Date().getMonth() + 1,
@@ -68,14 +68,14 @@ const ChamCong = () => {
     const checkDuplicate = async () => {
       const chamCongSnap = await getDocs(collection(db, "ChamCong"));
       const data = chamCongSnap.docs.map((doc) => doc.data());
-      const duplicate = data.some(
-        (item) => item.Thang === chamCongData.Thang && item.Nam === chamCongData.Nam
-      );
-      setIsDuplicate(duplicate);
+      const duplicates = data
+        .filter((item) => item.Nam === chamCongData.Nam)
+        .map((item) => parseInt(item.Thang));
+      setDuplicateMonths(duplicates);
     };
 
     checkDuplicate();
-  }, [chamCongData.Thang, chamCongData.Nam]);
+  }, [chamCongData.Nam, chamCongData.Thang]);
 
   const handleNgayNghiChange = (nvId, day, type) => {
     if (type === "coPhep") {
@@ -164,7 +164,7 @@ const ChamCong = () => {
           <select
             id="Thang"
             name="Thang"
-            className={`form-control ${isDuplicate ? "is-invalid" : ""}`}
+            className="form-control"
             value={chamCongData.Thang}
             onChange={(e) =>
               setChamCongData({ ...chamCongData, Thang: e.target.value })
@@ -173,15 +173,10 @@ const ChamCong = () => {
           >
             {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
               <option key={month} value={month}>
-                {month}
+                {month} {duplicateMonths.includes(month) ? "- đã chấm" : ""}
               </option>
             ))}
           </select>
-          {isDuplicate && (
-            <div className="invalid-feedback">
-              Tháng và năm này đã tồn tại trong danh sách chấm công.
-            </div>
-          )}
         </div>
 
         <div className="form-group">
@@ -272,7 +267,7 @@ const ChamCong = () => {
           )
         ))}
 
-        <button type="submit" className="btn btn-primary" disabled={isDuplicate}>
+        <button type="submit" className="btn btn-primary" disabled={duplicateMonths.includes(parseInt(chamCongData.Thang))}>
           Chấm Công
         </button>
       </form>
