@@ -48,7 +48,7 @@ import ThuongView from "./components/thuong/ThuongView";
 import PhuCapView from "./components/phucap/PhuCapView";
 import EditPhuCap from "./components/phucap/EditPhuCap";
 
-import NghiPhep from "./components/nghiphep";
+import NghiPhep from "./components/nghiphep/nghiphep";
 
 const App = () => {
   return (

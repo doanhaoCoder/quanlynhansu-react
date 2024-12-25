@@ -83,6 +83,14 @@ const ChiTietBangLuong = () => {
             }
           }
 
+          if (bangLuongData.MaChamCong) {
+            const chamCongRef = doc(db, "ChamCong", bangLuongData.MaChamCong);
+            const chamCongSnap = await getDoc(chamCongRef);
+            if (chamCongSnap.exists()) {
+              bangLuongData.MaChamCong = chamCongSnap.data().MaChamCong;
+            }
+          }
+
           setBangLuong(bangLuongData);
         } else {
           console.error("No such document!");
@@ -147,6 +155,9 @@ const ChiTietBangLuong = () => {
             </p>
           </div>
           <div className="col-6">
+            <p>
+              <strong>Mã Chấm Công:</strong> {bangLuong.MaChamCong}
+            </p>
             <p>
               <strong>Số Ngày Công:</strong> {bangLuong.SoNgayCong}
             </p>

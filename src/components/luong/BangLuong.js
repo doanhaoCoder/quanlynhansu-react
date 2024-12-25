@@ -46,6 +46,7 @@ const BangLuong = () => {
 
             if (nhanVienSnap.exists()) {
               const nhanVienData = nhanVienSnap.data();
+              item.MaNhanVien = nhanVienData.MaNV; // Add this line
               item.TenNhanVien = nhanVienData.HoTenNV;
               item.ChucVu = nhanVienData.ChucVu;
 
@@ -217,6 +218,7 @@ const BangLuong = () => {
           <tr>
             <th onClick={() => handleSort("stt")}>STT {renderSortIcon("stt")}</th>
             <th onClick={() => handleSort("MaLuong")}>Mã Lương {renderSortIcon("MaLuong")}</th>
+            <th onClick={() => handleSort("MaNhanVien")}>Mã Nhân Viên {renderSortIcon("MaNhanVien")}</th> {/* Add this line */}
             <th onClick={() => handleSort("TenNhanVien")}>Tên Nhân Viên {renderSortIcon("TenNhanVien")}</th>
             <th onClick={() => handleSort("ChucVu")}>Chức Vụ {renderSortIcon("ChucVu")}</th>
             <th onClick={() => handleSort("SoNgayCong")}>Số Ngày Công {renderSortIcon("SoNgayCong")}</th>
@@ -230,6 +232,7 @@ const BangLuong = () => {
             <tr key={item.id}>
               <td>{index + 1}</td>
               <td>{item.MaLuong}</td>
+              <td>{item.MaNhanVien}</td> {/* Add this line */}
               <td>{item.TenNhanVien}</td>
               <td>{item.TenChucVu}</td>
               <td>{item.SoNgayCong}</td>

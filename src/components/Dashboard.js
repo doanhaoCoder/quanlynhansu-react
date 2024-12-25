@@ -125,6 +125,11 @@ const Dashboard = () => {
                       </a>
                     </li>
                     <li>
+                      <a href="/dashboard/danh-sach-cham-cong">
+                        <span class="sub-item">Danh sách chấm công</span>
+                      </a>
+                    </li>
+                    <li>
                       <a href="/dashboard/tinh-luong">
                         <span class="sub-item">Tính lương</span>
                       </a>
