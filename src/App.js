@@ -48,6 +48,8 @@ import ThuongView from "./components/thuong/ThuongView";
 import PhuCapView from "./components/phucap/PhuCapView";
 import EditPhuCap from "./components/phucap/EditPhuCap";
 
+import NghiPhep from "./components/nghiphep";
+
 const App = () => {
   return (
     <Router>
@@ -107,6 +109,7 @@ const App = () => {
           <Route path="xem-thuong/:id" element={<ThuongView />} />
           <Route path="xem-phu-cap/:id" element={<PhuCapView />} />
           <Route path="chinh-sua-phu-cap/:id" element={<EditPhuCap />} />
+          <Route path="nghi-phep" element={<NghiPhep />} />
         </Route>
       </Routes>
     </Router>

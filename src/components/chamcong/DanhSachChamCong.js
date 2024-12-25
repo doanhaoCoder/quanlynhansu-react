@@ -36,6 +36,9 @@ const DanhSachChamCong = () => {
   return (
     <div className="">
       <h2>Danh Sách Chấm Công</h2>
+      <Link to="/dashboard/nghi-phep" className="btn btn-primary mb-3">
+        Xem Danh Sách Nghỉ Phép
+      </Link>
       <table className="table table-bordered">
         <thead>
           <tr>

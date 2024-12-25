@@ -97,6 +97,16 @@ const Dashboard = () => {
                         <span class="sub-item">Thêm nhân viên</span>
                       </a>
                     </li>
+                    <li>
+                      <a href="/dashboard/ky-luat">
+                        <span class="sub-item">Kỷ luật</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/dashboard/nghi-phep">
+                        <span class="sub-item">Nghỉ phép</span>
+                      </a>
+                    </li>
                   </ul>
                 </div>
               </li>
@@ -109,6 +119,11 @@ const Dashboard = () => {
                 </a>
                 <div class="collapse" id="tables">
                   <ul class="nav nav-collapse">
+                  <li>
+                      <a href="/dashboard/cham-cong">
+                        <span class="sub-item">Chấm công</span>
+                      </a>
+                    </li>
                     <li>
                       <a href="/dashboard/tinh-luong">
                         <span class="sub-item">Tính lương</span>
@@ -129,11 +144,7 @@ const Dashboard = () => {
                         <span class="sub-item">Thưởng</span>
                       </a>
                     </li>
-                    <li>
-                      <a href="/dashboard/ky-luat">
-                        <span class="sub-item">Kỷ luật</span>
-                      </a>
-                    </li>
+                    
                   </ul>
                 </div>
               </li>
