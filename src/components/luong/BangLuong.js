@@ -156,7 +156,7 @@ const BangLuong = () => {
   const searchedBangLuong = filteredBangLuong.filter(
     (item) =>
       item.MaLuong.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.TenNhanVien.toLowerCase().includes(searchTerm.toLowerCase())
+      item.MaNhanVien.toLowerCase().includes(searchTerm.toLowerCase()) // Updated this line
   );
 
   return (
@@ -194,7 +194,7 @@ const BangLuong = () => {
         <input
           type="text"
           className="form-control me-2"
-          placeholder="Tìm kiếm theo mã lương hoặc tên nhân viên"
+          placeholder="Tìm kiếm theo mã lương hoặc mã nhân viên" // Updated this line
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />

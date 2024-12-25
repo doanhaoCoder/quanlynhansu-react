@@ -127,7 +127,7 @@ const ChiTietBangLuong = () => {
               className="text-danger"
               style={{ fontSize: "1.8rem", lineHeight: "2rem" }}
             >
-              <strong>Tên Nhân Viên:</strong> {bangLuong.tenNV}
+              <strong>Tên Nhân Viên:</strong> {bangLuong.tenNV || "Nhân viên đã bị xóa"}
             </p>
             <p>
               <strong>Mã Nhân Viên:</strong> {bangLuong.maNV}
