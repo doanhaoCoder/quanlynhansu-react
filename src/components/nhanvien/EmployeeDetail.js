@@ -121,14 +121,15 @@ const EmployeeDetail = () => {
             <p>
               <strong>Tôn giáo:</strong> {employee.TonGiao}
             </p>
-            <p>
-              <strong>Địa chỉ tạm trú:</strong> {employee.DCTamTru}
-            </p>
+            
           </div>
         </div>
 
         <div className="row mt-4">
           <div className="col-6">
+            <p>
+              <strong>Địa chỉ tạm trú:</strong> {employee.DCTamTru}
+            </p>
             <p>
               <strong>Địa chỉ thường trú:</strong> {employee.DCThuongTru}
             </p>

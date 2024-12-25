@@ -249,6 +249,30 @@ const EditEmployee = () => {
               </select>
             </div>
             <div className="mb-3">
+              <label>
+                <strong>Địa chỉ tạm trú</strong>
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                name="DCTamTru"
+                value={employee.DCTamTru}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label>
+                <strong>Địa chỉ thường trú</strong>
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                name="DCThuongTru"
+                value={employee.DCThuongTru}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mb-3">
           <label>
             <strong>Phòng ban</strong>
           </label>

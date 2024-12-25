@@ -102,7 +102,9 @@ const EmployeeList = () => {
 
   return (
     <div className="mt-5">
-      <h2>Danh Sách Nhân Viên</h2>
+      <h2>Danh Sách Nhân Viên 
+        <a href="/dashboard/them-nhan-vien" className="btn btn-primary mb-2 ms-2">Thêm Nhân Viên</a>
+      </h2>
       <div className="row mt-4">
         <div className="col-6">
           <input
