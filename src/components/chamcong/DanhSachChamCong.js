@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+import { collection, getDocs, doc, deleteDoc, query, where, writeBatch } from "firebase/firestore";
 import { db } from "../../firebase";
 import { Link } from "react-router-dom";
 import { FaEye, FaTrash } from "react-icons/fa";
@@ -23,7 +23,21 @@ const DanhSachChamCong = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa bản ghi này?")) {
       try {
+        // Delete ChamCong record
         await deleteDoc(doc(db, "ChamCong", id));
+
+        // Delete corresponding ChamCongChiTiet records
+        const chamCongChiTietQuery = query(
+          collection(db, "ChamCongChiTiet"),
+          where("MaChamCong", "==", id)
+        );
+        const chamCongChiTietSnap = await getDocs(chamCongChiTietQuery);
+        const batch = writeBatch(db);
+        chamCongChiTietSnap.forEach((doc) => {
+          batch.delete(doc.ref);
+        });
+        await batch.commit();
+
         setChamCongList(chamCongList.filter((chamCong) => chamCong.id !== id));
         alert("Xóa thành công!");
       } catch (error) {
