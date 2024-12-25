@@ -173,7 +173,7 @@ const ChamCong = () => {
           >
             {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
               <option key={month} value={month}>
-                {month} {duplicateMonths.includes(month) ? "- đã chấm" : ""}
+                {month} {duplicateMonths.includes(month) ? "- đã chấm công" : ""}
               </option>
             ))}
           </select>

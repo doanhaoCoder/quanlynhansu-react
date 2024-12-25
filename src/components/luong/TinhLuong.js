@@ -19,6 +19,7 @@ const TinhLuong = () => {
   const sessionUser = JSON.parse(sessionStorage.getItem("user"));
   const { id } = useParams(); // Lấy ID nhân viên từ URL
   const [attendanceList, setAttendanceList] = useState([]);
+  const [usedAttendanceList, setUsedAttendanceList] = useState([]);
   const [selectedAttendance, setSelectedAttendance] = useState(null);
   const [nhanVienList, setNhanVienList] = useState([]);
   const [phuCap, setPhuCap] = useState({});
@@ -46,6 +47,15 @@ const TinhLuong = () => {
     };
 
     fetchAttendance();
+
+    // Lấy danh sách chấm công đã được tính lương
+    const fetchUsedAttendance = async () => {
+      const usedAttendanceSnap = await getDocs(collection(db, "Luong"));
+      const usedData = usedAttendanceSnap.docs.map((doc) => doc.data().MaChamCong);
+      setUsedAttendanceList(usedData);
+    };
+
+    fetchUsedAttendance();
 
     // Lấy mã lương tiếp theo (tăng dần)
     const fetchMaLuong = async () => {
@@ -263,7 +273,8 @@ const TinhLuong = () => {
               )
               .map((attendance) => (
                 <option key={attendance.id} value={attendance.id}>
-                  {attendance.MaChamCong} - {attendance.Thang}/{attendance.Nam}
+                  {attendance.MaChamCong} - {attendance.Thang}/{attendance.Nam}{" "}
+                  {usedAttendanceList.includes(attendance.id) ? "- đã tính lương" : ""}
                 </option>
               ))}
           </select>
@@ -349,7 +360,7 @@ const TinhLuong = () => {
           </div>
         )}
 
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="btn btn-primary" disabled={usedAttendanceList.includes(tinhLuongData.MaChamCong)}>
           Tính Lương
         </button>
         {error && <div className="alert alert-danger mt-3">{error}</div>}
