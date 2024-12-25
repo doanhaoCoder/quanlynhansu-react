@@ -159,7 +159,7 @@ const ChiTietBangLuong = () => {
               <strong>Mã Chấm Công:</strong> {bangLuong.MaChamCong}
             </p>
             <p>
-              <strong>Số Ngày Công:</strong> {bangLuong.SoNgayCong}
+              <strong>Số Ngày Công:</strong> {bangLuong.SoNgayCong || "Chấm công này đã bị xóa"}
             </p>
             <p>
               <strong>Phụ Cấp:</strong>{" "}

@@ -112,9 +112,13 @@ const EditEmployee = () => {
     }
 
     try {
-      console.log("Dữ liệu nhân viên sắp được cập nhật:", employee);
+      const updatedEmployee = { ...employee };
+      delete updatedEmployee.tenPhong;
+      delete updatedEmployee.tenChucVu;
+
+      console.log("Dữ liệu nhân viên sắp được cập nhật:", updatedEmployee);
       const docRef = doc(db, "nhanvien", id);
-      await updateDoc(docRef, employee);
+      await updateDoc(docRef, updatedEmployee);
       toast.success("Cập nhật nhân viên thành công!");
       navigate("/dashboard/danh-sach-nhan-vien");
     } catch (error) {
@@ -124,9 +128,31 @@ const EditEmployee = () => {
   };
 
   // Hàm xử lý thay đổi giá trị
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     const { name, value } = e.target;
-    setEmployee((prev) => ({ ...prev, [name]: value }));
+    const updatedEmployee = { ...employee, [name]: value };
+
+    if (name === "PhongBan") {
+      const phongRef = doc(db, "phongban", value);
+      const phongSnap = await getDoc(phongRef);
+      if (phongSnap.exists()) {
+        updatedEmployee.tenPhong = phongSnap.data().tenPhong;
+      } else {
+        updatedEmployee.tenPhong = "Không xác định";
+      }
+    }
+
+    if (name === "ChucVu") {
+      const chucVuRef = doc(db, "chucvu", value);
+      const chucVuSnap = await getDoc(chucVuRef);
+      if (chucVuSnap.exists()) {
+        updatedEmployee.tenChucVu = chucVuSnap.data().tenChucVu;
+      } else {
+        updatedEmployee.tenChucVu = "Không xác định";
+      }
+    }
+
+    setEmployee(updatedEmployee);
   };
 
   return (
