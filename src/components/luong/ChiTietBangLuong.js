@@ -158,14 +158,24 @@ const ChiTietBangLuong = () => {
               {bangLuong.PhuCap ? bangLuong.PhuCap.toLocaleString() : "0"} VNĐ
             </p>
             <p>
-              <strong>Ghi Chú Phụ Cấp:</strong> {bangLuong.GhiChuPhuCap}
+              <strong>Ghi Chú Phụ Cấp:</strong> {bangLuong.GhiChuPhuCap || "Không có"}
             </p>
             <p>
               <strong>Thưởng:</strong>{" "}
               {bangLuong.Thuong ? bangLuong.Thuong.toLocaleString() : "0"} VNĐ
             </p>
             <p>
-              <strong>Ghi Chú Thưởng:</strong> {bangLuong.GhiChuThuong}
+              <strong>Ghi Chú Thưởng:</strong> {bangLuong.GhiChuThuong || "Không có"}
+            </p>
+            <p>
+              <strong>Tổng Lương:</strong> {bangLuong.TongLuong? bangLuong.TongLuong.toLocaleString()
+                : "N/A"}{" "}
+              VNĐ
+            </p>
+            <p>
+              <strong>Đóng bảo hiểm 10.5%(Lương cơ bản + phụ cấp):</strong> {bangLuong.BaoHiem? bangLuong.BaoHiem.toLocaleString()
+                : "N/A"}{" "}
+              VNĐ
             </p>
             <p
               className="text-danger"
@@ -173,7 +183,7 @@ const ChiTietBangLuong = () => {
             >
               <strong>Lương Thực Nhận:</strong>{" "}
               {bangLuong.TongLuong
-                ? bangLuong.TongLuong.toLocaleString()
+                ? bangLuong.LuongThucNhan.toLocaleString()
                 : "N/A"}{" "}
               VNĐ
             </p>

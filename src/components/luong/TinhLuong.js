@@ -187,6 +187,14 @@ const TinhLuong = () => {
     }));
   };
 
+  const calculateInsurance = (luongChucVu, soTienPhuCap) => {
+    return (luongChucVu + soTienPhuCap) * 0.105;
+  };
+
+  const calculateNetSalary = (tongLuong, insurance) => {
+    return tongLuong - insurance;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -202,10 +210,14 @@ const TinhLuong = () => {
           return sum + (thuong[nv.NhanVienID][bonusId] ? (bonus ? bonus.soTienThuong : 0) : 0);
         }, 0);
 
+        const insurance = calculateInsurance(parseFloat(nv.LuongChucVu), totalAllowances);
+
         const tongLuong =
           parseFloat(nv.LuongChucVu) * parseFloat(nv.NgayCongThucTe) +
           totalAllowances +
           totalBonuses;
+
+        const netSalary = calculateNetSalary(tongLuong, insurance);
 
         await addDoc(collection(db, "Luong"), {
           ...tinhLuongData,
@@ -218,6 +230,8 @@ const TinhLuong = () => {
           Thuong: totalBonuses,
           GhiChuThuong: JSON.stringify(thuong[nv.NhanVienID] || {}),
           TongLuong: tongLuong,
+          BaoHiem: insurance,
+          LuongThucNhan: netSalary,
         });
       }
 

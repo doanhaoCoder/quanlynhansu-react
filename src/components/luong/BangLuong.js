@@ -64,14 +64,6 @@ const BangLuong = () => {
               } else {
                 item.SoNgayCong = "Chấm công này đã bị xóa";
               }
-
-              // Calculate insurance payment
-              const insurancePayment = (parseFloat(nhanVienData.LuongChucVu) + parseFloat(nhanVienData.soTienPhuCap)) * 0.105;
-              item.BaoHiemChiTra = insurancePayment;
-
-              // Calculate net salary
-              const tongLuong = parseFloat(nhanVienData.LuongChucVu) * parseFloat(item.SoNgayCong) + parseFloat(nhanVienData.totalAllowances) + parseFloat(nhanVienData.totalBonuses);
-              item.LuongThucNhan = tongLuong - insurancePayment;
             } else {
               item.TenNhanVien = "Nhân viên nầy đã bị xóa";
               item.SoNgayCong = "Nhân viên này đã bị xóa";
@@ -245,11 +237,12 @@ const BangLuong = () => {
             <tr key={item.id}>
               <td>{index + 1}</td>
               <td>{item.MaLuong}</td>
-              <td>{item.MaNhanVien || "Nhân viên nầy đã bị xóa"}</td> {/* Add this line */}
+              <td>{item.MaNhanVien || "Nhân viên nầy đã bị xóa"}</td>{" "}
+              {/* Add this line */}
               <td>{item.TenNhanVien}</td>
               <td>{item.ChucVu}</td>
               <td>{item.SoNgayCong}</td>
-              <td>{item.TongLuong.toLocaleString()} VNĐ</td>
+              <td>{item.LuongThucNhan.toLocaleString()} VNĐ</td>
               <td>{new Date(item.NgayTinhLuong).toLocaleDateString()}</td>
               <td>
                 <button
