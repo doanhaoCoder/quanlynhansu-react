@@ -64,6 +64,14 @@ const BangLuong = () => {
               } else {
                 item.SoNgayCong = "Chấm công này đã bị xóa";
               }
+
+              // Calculate insurance payment
+              const insurancePayment = (parseFloat(nhanVienData.LuongChucVu) + parseFloat(nhanVienData.soTienPhuCap)) * 0.105;
+              item.BaoHiemChiTra = insurancePayment;
+
+              // Calculate net salary
+              const tongLuong = parseFloat(nhanVienData.LuongChucVu) * parseFloat(item.SoNgayCong) + parseFloat(nhanVienData.totalAllowances) + parseFloat(nhanVienData.totalBonuses);
+              item.LuongThucNhan = tongLuong - insurancePayment;
             } else {
               item.TenNhanVien = "Nhân viên nầy đã bị xóa";
               item.SoNgayCong = "Nhân viên này đã bị xóa";
@@ -224,7 +232,7 @@ const BangLuong = () => {
               Số Ngày Công {renderSortIcon("SoNgayCong")}
             </th>
             <th onClick={() => handleSort("TongLuong")}>
-              Tổng Lương {renderSortIcon("TongLuong")}
+              Lương thực nhận {renderSortIcon("TongLuong")}
             </th>
             <th onClick={() => handleSort("NgayTinhLuong")}>
               Ngày Chấm {renderSortIcon("NgayTinhLuong")}

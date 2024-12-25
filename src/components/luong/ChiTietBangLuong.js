@@ -171,7 +171,7 @@ const ChiTietBangLuong = () => {
               className="text-danger"
               style={{ fontSize: "1.8rem", lineHeight: "2rem" }}
             >
-              <strong>Tổng Lương:</strong>{" "}
+              <strong>Lương Thực Nhận:</strong>{" "}
               {bangLuong.TongLuong
                 ? bangLuong.TongLuong.toLocaleString()
                 : "N/A"}{" "}
