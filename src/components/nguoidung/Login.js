@@ -42,7 +42,7 @@ const Login = () => {
         // Lưu thông tin vào SessionStorage
         sessionStorage.setItem("user", JSON.stringify(user));
         // alert("Đăng nhập thành công!");
-        navigate("/dashboard"); // Chuyển hướng đến trang dashboard
+        navigate("/dashboard/thong-ke"); // Chuyển hướng đến trang dashboard
       } else {
         alert("Tên đăng nhập hoặc mật khẩu không đúng!");
       }
