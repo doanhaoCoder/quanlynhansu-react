@@ -33,8 +33,8 @@ const Login = () => {
       querySnapshot.forEach((doc) => {
         if (doc.exists && doc.data().password === password) {
           // Lấy thông tin cần thiết
-          const { username, ho, ten, role, email } = doc.data();
-          user = { username, ho, ten, role, email };
+          const { username, ho, ten, role, email, trangThai } = doc.data();
+          user = { username, ho, ten, role, email, trangThai };
         }
       });
 

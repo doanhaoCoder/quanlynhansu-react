@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"; // Thêm import useState và useEffect
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // Component React
 import { faUsers } from "@fortawesome/free-solid-svg-icons"; // Biểu tượng cần dùng
 import { faUser } from "@fortawesome/free-solid-svg-icons"; // Đảm bảo đã import faUser
@@ -119,7 +119,7 @@ const Dashboard = () => {
                 </a>
                 <div class="collapse" id="tables">
                   <ul class="nav nav-collapse">
-                  <li>
+                    <li>
                       <a href="/dashboard/cham-cong">
                         <span class="sub-item">Chấm công</span>
                       </a>
@@ -149,7 +149,6 @@ const Dashboard = () => {
                         <span class="sub-item">Thưởng</span>
                       </a>
                     </li>
-                    
                   </ul>
                 </div>
               </li>
@@ -164,13 +163,16 @@ const Dashboard = () => {
                     <ul class="nav nav-collapse">
                       <li>
                         <a href="/dashboard/danh-sach-nguoi-dung">
-                          <span class="sub-item">Người dùng</span>
+                          <span class="sub-item">Tài khoản</span>
                         </a>
                       </li>
                     </ul>
                   </div>
                 </li>
               )}
+              <li class="nav-item">
+                <Link to="thong-ke">Thống Kê</Link>
+              </li>
             </ul>
           </div>
         </div>
